@@ -1,3 +1,6 @@
 # IntelliJ
 *.iml
 .idea/
+
+# Secrets
+**/sftp.properties

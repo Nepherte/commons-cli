@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ivy-module version="2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+  <info organisation="be.nepherte" module="commons-cli">
+    <license name="Apache License 2.0"/>
+
+    <description homepage="https://github.com/Nepherte/Commons-CLI">
+      Java library for parsing command line options and arguments.
+    </description>
+  </info>
+
+  <configurations>
+    <conf name="release" description="Published artifacts"/>
+    <conf name="testing" description="Testing dependencies"/>
+    <conf name="default" description="Default configuration" extends="release"/>
+  </configurations>
+
+  <publications defaultconf="release">
+    <!-- Release artifacts -->
+
+  </publications>
+
+  <dependencies defaultconf="default" defaultconfmapping="*->default">
+    <!-- Default dependencies -->
+
+    <!-- Testing dependencies -->
+
+  </dependencies>
+</ivy-module>

@@ -1,0 +1,32 @@
+﻿<ivysettings>
+  <!-- Default resolver -->
+  <settings defaultResolver="http"/>
+
+  <!-- Resolver properties -->
+  <properties file="http.properties"/>
+  <properties file="sftp.properties"/>
+
+  <!-- Cache properties -->
+  <properties file="cache.properties"/>
+
+  <caches
+      ivyPattern="${cache.repo.pattern}/ivy.xml"
+      artifactPattern="${cache.repo.pattern}/${cache.artifact.pattern}"/>
+
+  <resolvers>
+    <!-- Online repository from which to retrieve dependencies -->
+    <url name="http">
+      <ivy pattern="${http.repo.pattern}/ivy.xml"/>
+      <artifact pattern="${http.repo.pattern}/${http.artifact.pattern}"/>
+    </url>
+
+    <!-- Online repository in which to publish the artifacts -->
+    <sftp
+      name="sftp" host="${sftp.hostname}"
+      user="${sftp.username}" userPassword="${sftp.password}">
+
+      <ivy pattern="${sftp.repo.pattern}/ivy.xml"/>
+      <artifact pattern="${sftp.repo.pattern}/${sftp.artifact.pattern}"/>
+    </sftp>
+  </resolvers>
+</ivysettings>
