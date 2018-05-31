@@ -1,0 +1,17 @@
+# Source code language.
+language: java
+
+# Support Oracle JDK 8+
+jdk:
+- oraclejdk8
+
+# Decrypt sftp secrets.
+before_install:
+- openssl aes-256-cbc
+    -K $encrypted_6d162d86900c_key
+    -iv $encrypted_6d162d86900c_iv
+    -in src/etc/ivy/sftp.properties.enc
+    -out src/etc/ivy/sftp.properties -d
+
+# Use Ant to compile, test, package and publish.
+script: ant -f src/etc/ant/build.xml ci
