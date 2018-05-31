@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ivy-module version="2.0"
+  xmlns:e="http://ant.apache.org/ivy/extra"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
@@ -18,14 +19,15 @@
   </configurations>
 
   <publications defaultconf="release">
-    <!-- Release artifacts -->
-
+    <artifact name="commons-cli" ext="jar" type="jar" conf="release"/>
+    <artifact name="commons-cli" ext="jar" type="source" conf="release" e:classifier="sources"/>
+    <artifact name="commons-cli" ext="jar" type="javadoc" conf="release" e:classifier="javadoc"/>
   </publications>
 
   <dependencies defaultconf="default" defaultconfmapping="*->default">
     <!-- Default dependencies -->
 
     <!-- Testing dependencies -->
-
+    <dependency org="org.junit" name="junit" rev="4.12" conf="testing"/>
   </dependencies>
 </ivy-module>

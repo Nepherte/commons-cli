@@ -2,5 +2,9 @@
 *.iml
 .idea/
 
+# Output
+out/
+target/
+
 # Secrets
 **/sftp.properties
