@@ -16,6 +16,8 @@
 package be.nepherte.commons.cli;
 
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -24,12 +26,50 @@ import java.util.regex.Pattern;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * <p>An <em>immutable</em> option that modifies the behavior of a {@code
+ * Command}. Options are preceded by the command name and are usually separated
+ * from each other by a single space. The effect of an option is left
+ * <em>unspecified</em>.
+ *
+ * <p>An option can only be configured by means of a {@link Builder Builder},
+ * acquired using one of the available <em >static factory methods</em>. A
+ * convenience implementation is already provided to initialize a builder with a
+ * {@link Template Template}.
+ */
 public final class Option {
 
   /** Pattern that indicates the start of an option name. */
   private static final Pattern NAME_PREFIX_PATTERN = Pattern.compile("^-+");
   /** Pattern that indicates a whitespace character. */
   private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+
+  /** The short name of this option. */
+  private final String shortName;
+  /** The long name of this option. */
+  private final String longName;
+  /** The immutable values of this option. */
+  private final List<String> values;
+
+  /**
+   * Returns a builder to create new options.
+   *
+   * @return a builder to create new options
+   */
+  public static Builder newInstance() {
+    return new Builder();
+  }
+
+  /**
+   * Returns a builder initialized with the values of an existing template.
+   *
+   * @param template the settings of the new builder
+   * @return a pre-initialized builder to create new options
+   */
+  public static Builder newInstance(Template template) {
+    requireNonNull(template, "Cannot create builder for template [null]");
+    return new Builder(template);
+  }
 
   /**
    * Returns a builder to create new templates.
@@ -50,10 +90,236 @@ public final class Option {
   }
 
   /**
-   * Creates a new {@code Option}.
+   * Creates a new option, initialized with a builder's values. Changes made
+   * to the builder afterwards, do not affect this option. As such, a builder
+   * can be re-used several times.
+   *
+   * @param builder the settings of the new option
    */
-  private Option() {
-    // Hide constructor.
+  Option(Builder builder) {
+    shortName = builder.shortName;
+    longName = builder.longName;
+    values = new ArrayList<>(builder.values);
+  }
+
+  /**
+   * Returns the name of this option. It is either the {@link #getShortName
+   * short} or {@link #getLongName long} name of this option. If both names
+   * exist, the short name takes precedence over the long one. The name is
+   * never {@code null} or blank.
+   *
+   * @return the name of this option
+   */
+  public String getName() {
+    // The builder guarantees that at least one exists.
+    return shortName == null ? longName : shortName;
+  }
+
+  /**
+   * Returns the short name of this option.
+   *
+   * @return the short name of this option
+   */
+  public Optional<String> getShortName() {
+    return Optional.ofNullable(shortName);
+  }
+
+  /**
+   * Returns the long name of this option.
+   *
+   * @return the long name of this option
+   */
+  public Optional<String> getLongName() {
+    return Optional.ofNullable(longName);
+  }
+
+  /**
+   * Returns the (first) {@link #getValues() value} of this option.
+   *
+   * @return the (first) value of this option
+   */
+  public Optional<String> getValue() {
+    if (values.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(values.get(0));
+  }
+
+  /**
+   * Returns the values of this option as an immutable list.
+   *
+   * @return the values of this option as an immutable list
+   */
+  public List<String> getValues() {
+    return Collections.immutableList(values);
+  }
+
+  /**
+   * <p>Returns a human-readable representation of this option. The format is:
+   * -{@link #getName name} [{@link #getValues values}].</p>
+   *
+   * @return a human-readable representation of this option
+   */
+  @Override
+  public String toString() {
+    return new Option.Builder(this).toString();
+  }
+
+  /**
+   * <p>A builder to create new {@link Option Options} in a fluent, chained
+   * fashion. Typically used by a parser to build options from command line
+   * tokens, based on one of the {@link Template Templates} available in a
+   * command descriptor.
+   *
+   * <p><strong>NOTE:</strong> A builder can be re-used several times without
+   * affecting previously built options. However, values previously applied to
+   * the the builder, stick after creating an option, unless overridden again.
+   */
+  public static final class Builder {
+
+    /** The short name of the new option. */
+    private String shortName;
+    /** The long name of the new option. */
+    private String longName;
+    /** The values of the new option. */
+    private final List<String> values;
+
+    /**
+     * Creates a new, uninitialized builder.
+     */
+    Builder() {
+      values = new ArrayList<>(10);
+    }
+
+    /**
+     * Creates a new builder, initialized with a template's values.
+     *
+     * @param template the settings of the new builder
+     */
+    Builder(Template template) {
+      shortName = template.shortName;
+      longName = template.longName;
+      values = new ArrayList<>(10);
+    }
+
+    /**
+     * Creates a new builder, initialized with an option's values.
+     *
+     * @param option the settings of the new builder
+     */
+    Builder(Option option) {
+      shortName = option.shortName;
+      longName = option.longName;
+      values = new ArrayList<>(option.values);
+    }
+
+    /**
+     * Sets the short name of the new option. Leading dashes are stripped.
+     *
+     * @param shortName the short name of the new option
+     * @return this builder
+     * @throws IllegalArgumentException the name contains a space
+     */
+    public Builder shortName(String shortName) {
+      this.shortName = parseOptionName(shortName);
+      return this;
+    }
+
+    /**
+     * Sets the long name of the new option. Leading dashes are stripped.
+     *
+     * @param longName the long name of the new option
+     * @return this builder
+     * @throws IllegalArgumentException the name contains a space
+     */
+    public Builder longName(String longName) {
+      this.longName = parseOptionName(longName);
+      return this;
+    }
+
+    /**
+     * Adds a value to the new option. {@code Null} values are ignored.
+     *
+     * @param value the value to add
+     * @return this builder
+     */
+    public Builder value(String value) {
+      if (value != null) {
+        values.add(value);
+      }
+      return this;
+    }
+
+    /**
+     * Adds values to the new option. {@code Null} values are ignored.
+     *
+     * @param values the values to add
+     * @return this builder
+     */
+    public Builder values(Iterable<String> values) {
+      if (values != null) {
+        values.forEach(this::value);
+      }
+      return this;
+    }
+
+    /**
+     * Adds values to the new option. {@code Null} values are ignored.
+     *
+     * @param values the values to add
+     * @return this builder
+     */
+    public Builder values(String... values) {
+      if (values != null) {
+        stream(values).forEach(this::value);
+      }
+      return this;
+    }
+
+    /**
+     * Constructs a new option, using the values that were applied to this
+     * builder. The result can be used to describe a command line switch used to
+     * start an application. The effect of the option is left unspecified.
+     *
+     * @return a new option
+     * @throws IllegalStateException the built option is invalid
+     */
+    public Option build() {
+      if (shortName == null && longName == null) {
+        throw new IllegalStateException("Option has no name");
+      }
+
+      return new Option(this);
+    }
+
+    /**
+     * @see Option#toString() Option.toString()
+     */
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+
+      // Include the name.
+      if (shortName != null) {
+        builder.append("-").append(shortName);
+      }
+      else if (longName != null) {
+        builder.append("--").append(longName);
+      }
+      else {
+        builder.append("-").append("<undefined>");
+      }
+
+      // Include the values.
+      if (!values.isEmpty()) {
+        StringJoiner joiner = new StringJoiner(",");
+        values.forEach(joiner::add);
+        builder.append('=').append(joiner);
+      }
+
+      return builder.toString();
+    }
   }
 
   /**
@@ -417,7 +683,7 @@ public final class Option {
         if (maxValues < minValues) {
           throw new IllegalStateException(
             "Template requires more values than allowed" +
-              "[" + maxValues + " < " + minValues + "]"
+            "[" + maxValues + " < " + minValues + "]"
           );
         }
 
