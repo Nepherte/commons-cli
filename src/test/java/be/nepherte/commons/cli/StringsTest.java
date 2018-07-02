@@ -72,6 +72,19 @@ public final class StringsTest {
   }
 
   @Test
+  public void containsWhitespace() {
+    assertThat(Strings.containsWhitespace("  "), is(true));
+    assertThat(Strings.containsWhitespace("\t"), is(true));
+    assertThat(Strings.containsWhitespace("a\ta"), is(true));
+    assertThat(Strings.containsWhitespace("aa"), is(false));
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void containsWhitespaceNull() {
+    Strings.containsWhitespace(null);
+  }
+
+  @Test
   public void repeat() {
     String result = Strings.repeat('a', 6);
     assertThat(result, is("aaaaaa"));

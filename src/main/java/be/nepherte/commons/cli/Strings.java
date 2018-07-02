@@ -16,11 +16,15 @@
 package be.nepherte.commons.cli;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for {@code String}-related functionality.
  */
 final class Strings {
+
+  /** Pattern that indicates a whitespace character. */
+  private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
   /**
    * Creates a new instance.
@@ -77,6 +81,16 @@ final class Strings {
    */
   public static boolean isNullOrWhitespace(String string) {
     return string == null || string.trim().isEmpty();
+  }
+
+  /**
+   * Indicates if the string contains whitespace.
+   *
+   * @param string the string to test
+   * @return true if contains whitespace
+   */
+  public static boolean containsWhitespace(String string) {
+    return WHITESPACE_PATTERN.matcher(string).find();
   }
 
   /**

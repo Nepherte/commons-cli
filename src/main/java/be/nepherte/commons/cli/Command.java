@@ -15,20 +15,49 @@
  */
 package be.nepherte.commons.cli;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * <p>An <em>immutable</em> representation of a command, its {@link Option
+ * options} and its arguments. It is often the result of a {@code Parser}
+ * that processes command-line tokes against an application's {@link
+ * Command.Descriptor descriptor}.
+ *
+ * <p>A command contains the options and arguments used to launch an
+ * application. The values of an option can be retrieved with {@link
+ * #getOptionValues}, whereas arguments can be accessed via {@link
+ * #getArgument}.
+ *
+ * <p>A command can only be configured by means of a {@link Builder Builder},
+ * acquired using one of the <em >static factory methods</em>. A convenience
+ * implementation is available to create a command from scratch.
+ */
 public final class Command {
 
-  /** Pattern that indicates a whitespace character. */
-  private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+  /** The name of this command. */
+  private final String name;
+  /** The options of this command. */
+  private final List<Option> options;
+  /** The arguments of this command. */
+  private final List<String> arguments;
+
+  /**
+   * Returns a builder to create new commands.
+   *
+   * @return a builder to create new commands
+   */
+  public static Builder newInstance() {
+    return new Builder();
+  }
 
   /**
    * Returns a builder to create new descriptors.
@@ -40,10 +69,140 @@ public final class Command {
   }
 
   /**
-   * Creates a new {@code Command}.
+   * Creates a new command, initialized with a builder's values. Changes made
+   * to the builder afterwards, do not affect this command. As such, a builder
+   * can be re-used several times.
+   *
+   * @param builder the settings of the new command
    */
-  private Command() {
-    // Hide constructor.
+  Command(Builder builder) {
+    name = builder.name;
+    options = new ArrayList<>(builder.options);
+    arguments = new ArrayList<>(builder.arguments);
+  }
+
+  /**
+   * Returns the name of this command.
+   *
+   * @return the name of this command
+   */
+  public Optional<String> getName() {
+    return Optional.ofNullable(name);
+  }
+
+  /**
+   * Returns the number of arguments of this command.
+   *
+   * @return the number of arguments of this command
+   */
+  public int argumentCount() {
+    return arguments.size();
+  }
+
+  /**
+   * Returns the {@code ith} argument of this command. An argument's index is
+   * determined by the order in which arguments are provided by the user. It is
+   * a positive number, smaller than {@link #argumentCount()}.
+   *
+   * @param i the index of the argument
+   * @return the argument at position {@code i}
+   * @throws IllegalArgumentException index is out of range
+   */
+  public String getArgument(int i) {
+    if (i < 0 || i >= argumentCount()) {
+      throw new IllegalArgumentException(
+        "Command has no argument at index [" + i + "]"
+      );
+    }
+    return arguments.get(i);
+  }
+
+  /**
+   * Indicates whether this command contains an option with a given name.
+   * Both short and long names, optionally preceded by hyphens, are accepted.
+   * Returns true if an option with such name is present.
+   *
+   * @param name the option name, preceded by zero or more hyphens
+   * @return true if an option with such name is present
+   */
+  public boolean hasOption(String name) {
+    return resolveOption(name, options) != null;
+  }
+
+  /**
+   * Returns the (first) {@link #getOptionValues value} of an option, if such a
+   * value exists.
+   *
+   * @param name the option name, preceded by zero or more hyphens
+   * @return the option value if it exists, or {@code null}
+   * @throws IllegalArgumentException no option with such name
+   */
+  public String getOptionValue(String name) {
+    List<String> values = getOptionValues(name);
+    return values.isEmpty() ? null : values.get(0);
+  }
+
+  /**
+   * Returns the values of an option as an immutable list.
+   *
+   * @param name the option name, preceded by zero or more hyphens
+   * @return the values of an option as an immutable list
+   * @throws IllegalArgumentException no option with such name
+   */
+  public List<String> getOptionValues(String name) {
+    Option option = resolveOption(name, options);
+
+    if (option == null) {
+      throw new IllegalArgumentException(
+        "Command has no option with name [" + name + "]"
+      );
+    }
+
+    // Option values are already immutable.
+    return option.getValues();
+  }
+
+  /**
+   * Returns a human-readable representation of this command. The format is:
+   * {@link #getName name} {@link #hasOption options} {@link #getArgument
+   * arguments}.
+   *
+   * @return a human-readable representation of this command
+   */
+  @Override
+  public String toString() {
+    return new Builder(this).toString();
+  }
+
+  /**
+   * Resolves a name to an option. A name is resolved to an option if the
+   * short or long name of the option, notwithstanding leading hyphens, matches
+   * the string. Returns {@code null} if there is no such option.
+   *
+   * @param name the string to resolve
+   * @param options the available options
+   * @return the option with such name, or {@code null}
+   */
+  private static Option resolveOption(String name, Iterable<Option> options) {
+    if (Strings.isNullOrWhitespace(name)) {
+      return null;
+    }
+
+    // Support querying an option name with leading hyphens.
+    String stripped = Option.NAME_PREFIX_PATTERN.matcher(name).replaceFirst("");
+
+    // The last provided option prevails.
+    for (Option option: options) {
+      String shortName = option.getShortName().orElse(null);
+      String longName = option.getLongName().orElse(null);
+
+      // Check the short name of the option first, then the long name.
+      if (stripped.equals(shortName) || stripped.equals(longName)) {
+        return option;
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -64,7 +223,7 @@ public final class Command {
     }
 
     // Command names never contain spaces.
-    if (WHITESPACE_PATTERN.matcher(name).find()) {
+    if (Strings.containsWhitespace(name)) {
       throw new IllegalArgumentException(
         "Command name [" + name + "] contains whitespace"
       );
@@ -72,6 +231,175 @@ public final class Command {
 
     // Convert empty names to null.
     return Strings.emptyToNull(name);
+  }
+
+  /**
+   * <p>A builder to create new {@link Command Commands} in a fluent, chained
+   * fashion. Typically used by a {@code Parser} to construct a command from
+   * one or more command-line tokens against an application's {@link
+   * Command.Descriptor Descriptor}.
+   *
+   * <p><strong>NOTE:</strong> A builder can be re-used several times without
+   * affecting previously created commands. However, values previously applied
+   * to the builder, stick after creating a command, unless overridden again.
+   */
+  public static final class Builder {
+
+    /** The name of the new command. */
+    private String name;
+    /** The options of new command. */
+    private final List<Option> options;
+    /** The arguments of the new command. */
+    private final List<String> arguments;
+
+    /**
+     * Creates a new, uninitialized builder.
+     */
+    Builder() {
+      options = new ArrayList<>(10);
+      arguments = new ArrayList<>(10);
+    }
+
+    /**
+     * Creates a new builder, initialized with a command's values.
+     *
+     * @param command the settings of the new builder
+     */
+    Builder(Command command) {
+      name = command.name;
+      options = new ArrayList<>(command.options);
+      arguments = new ArrayList<>(command.arguments);
+    }
+
+    /**
+     * Sets the name of the new command.
+     * reset.
+     *
+     * @param name the name of the new command
+     * @return this builder
+     * @throws IllegalArgumentException the name contains a space
+     */
+    public Builder name(String name) {
+      this.name = parseCommandName(name);
+      return this;
+    }
+
+    /**
+     * Adds an option to the new command. Replaces options that share the same
+     * name. {@code Null} options are ignored.
+     *
+     * @param option the option to add
+     * @return this builder
+     */
+    public Builder option(Option option) {
+      if (option != null) {
+        String optionName = option.getName();
+        Option resolved = resolveOption(optionName, options);
+
+        if (resolved != null) {
+          options.remove(resolved);
+        }
+        options.add(option);
+      }
+      return this;
+    }
+
+    /**
+     * Adds options to the new command. Replaces options that share the same
+     * name. {@code Null} options are ignored.
+     *
+     * @param options the options to add
+     * @return this builder
+     */
+    public Builder options(Iterable<Option> options) {
+      if (options != null) {
+        options.forEach(this::option);
+      }
+      return this;
+    }
+
+    /**
+     * Adds options to the new command. Replaces options that share the same
+     * name. {@code Null} options are ignored.
+     *
+     * @param options the options to add
+     * @return this builder
+     */
+    public Builder options(Option... options) {
+      if (options != null) {
+        stream(options).forEach(this::option);
+      }
+      return this;
+    }
+
+    /**
+     * Adds an argument to the new command. {@code Null} arguments are ignored.
+     *
+     * @param argument the argument to add
+     * @return this builder
+     */
+    public Builder argument(String argument) {
+      if (!Strings.isNullOrWhitespace(argument)) {
+        arguments.add(argument);
+      }
+      return this;
+    }
+
+    /**
+     * Adds arguments to the new command. {@code Null} arguments are ignored.
+     *
+     * @param arguments the arguments to add
+     * @return this builder
+     */
+    public Builder arguments(Iterable<String> arguments) {
+      if (arguments != null) {
+        arguments.forEach(this::argument);
+      }
+      return this;
+    }
+
+    /**
+     * Adds arguments to the new command. {@code Null} arguments are ignored.
+     *
+     * @param arguments the arguments to add
+     * @return this builder
+     */
+    public Builder arguments(String... arguments) {
+      if (arguments != null) {
+        stream(arguments).forEach(this::argument);
+      }
+      return this;
+    }
+
+    /**
+     * @see Command#toString() Command.toString()
+     */
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      builder.append(name != null ? name : "<undefined>");
+
+      for (Option option: options) {
+        builder.append(' ').append(option);
+      }
+
+      for (String argument: arguments) {
+        builder.append(' ').append(argument);
+      }
+
+      return builder.toString();
+    }
+
+    /**
+     * Constructs a new command, using the values that were applied to this
+     * builder. The result can be used to query the options and arguments
+     * provided to the command. The effect of the command remains unspecified.
+     *
+     * @return a new command
+     */
+    public Command build() {
+      return new Command(this);
+    }
   }
 
   /**

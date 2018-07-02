@@ -40,9 +40,7 @@ import static java.util.Objects.requireNonNull;
 public final class Option {
 
   /** Pattern that indicates the start of an option name. */
-  private static final Pattern NAME_PREFIX_PATTERN = Pattern.compile("^-+");
-  /** Pattern that indicates a whitespace character. */
-  private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+  static final Pattern NAME_PREFIX_PATTERN = Pattern.compile("^-+");
 
   /** The short name of this option. */
   private final String shortName;
@@ -174,7 +172,7 @@ public final class Option {
    *
    * <p><strong>NOTE:</strong> A builder can be re-used several times without
    * affecting previously built options. However, values previously applied to
-   * the the builder, stick after creating an option, unless overridden again.
+   * the builder, stick after creating an option, unless overridden again.
    */
   public static final class Builder {
 
@@ -341,7 +339,7 @@ public final class Option {
     }
 
     // Option names never contain whitespace.
-    if (WHITESPACE_PATTERN.matcher(name).find()) {
+    if (Strings.containsWhitespace(name)) {
       throw new IllegalArgumentException(
         "Option name [" + name + "] contains whitespace"
       );
@@ -354,7 +352,7 @@ public final class Option {
 
   /**
    * <p>An <em>immutable</em> template that describes one options of a
-   * {@code Command}. It acts as a <em>blueprint</em> that spells out exactly
+   * {@link Command}. It acts as a <em>blueprint</em> that spells out exactly
    * what an {@link Option} should look like. Failing to comply to this
    * blueprint is a direct violation of the contract.
    *
