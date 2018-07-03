@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toSet;
 
 /**
  * <p>An <em>immutable</em> representation of a command, its {@link Option
- * options} and its arguments. It is often the result of a {@code Parser}
+ * options} and its arguments. It is often the result of a {@link Parser}
  * that processes command-line tokes against an application's {@link
  * Command.Descriptor descriptor}.
  *
@@ -235,7 +235,7 @@ public final class Command {
 
   /**
    * <p>A builder to create new {@link Command Commands} in a fluent, chained
-   * fashion. Typically used by a {@code Parser} to construct a command from
+   * fashion. Typically used by a {@link Parser} to construct a command from
    * one or more command-line tokens against an application's {@link
    * Command.Descriptor Descriptor}.
    *
@@ -404,7 +404,7 @@ public final class Command {
 
   /**
    * <p>An <em>immutable</em> description of the options and arguments that are
-   * available to a command. It is used by a {@code Parser} to determine the
+   * available to a command. It is used by a {@link Parser} to determine the
    * semantics of the tokens provided to a {@link Command}.
    *
    * <p>A descriptor can only be configured by means of a {@link Builder
