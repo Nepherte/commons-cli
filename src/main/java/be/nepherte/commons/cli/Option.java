@@ -15,9 +15,13 @@
  */
 package be.nepherte.commons.cli;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 
 public final class Option {
@@ -34,6 +38,15 @@ public final class Option {
    */
   public static Template.Builder newTemplate() {
     return new Template.Builder();
+  }
+
+  /**
+   * Returns a builder to create new groups.
+   *
+   * @return a builder to create new groups
+   */
+  public static Group.Builder newGroup() {
+    return new Group.Builder();
   }
 
   /**
@@ -404,7 +417,7 @@ public final class Option {
         if (maxValues < minValues) {
           throw new IllegalStateException(
             "Template requires more values than allowed" +
-            "[" + maxValues + " < " + minValues + "]"
+              "[" + maxValues + " < " + minValues + "]"
           );
         }
 
@@ -452,6 +465,179 @@ public final class Option {
         }
 
         return builder.toString();
+      }
+    }
+  }
+
+  /**
+   * <p>An <em>immutable</em> group of mutually <em>exclusive</em> templates.
+   * Any two templates in the same group cannot be present simultaneously on a
+   * command line. Groups can be either required or optional.
+   *
+   * <p>A group can only be configured by means of a {@link Builder Builder},
+   * acquired using one of the <em>static factory methods</em>. A convenience
+   * implementation is available to create a group from scratch.
+   */
+  public static final class Group {
+
+    /** An indication that this group is required. */
+    private final boolean required;
+    /** The mutually exclusive templates. */
+    private final Set<Template> templates;
+
+    /**
+     * Creates a new group, initialized with a builder's values. Changes made to
+     * the builder afterwards, do not affect this group. As such, a builder can
+     * be re-used several times.
+     *
+     * @param builder the settings of the new descriptor
+     */
+    Group(Builder builder) {
+      this.required = builder.required;
+      this.templates = new HashSet<>(builder.templates);
+    }
+
+    /**
+     * Indicates this group is required or optional.
+     *
+     * @return true if this group is required or optional
+     */
+    public boolean isRequired() {
+      return required;
+    }
+
+    /**
+     * Returns the templates in this group as an immutable set.
+     *
+     * @return the templates in this group as an immutable set
+     */
+    public Set<Template> getTemplates() {
+      return Collections.immutableSet(templates);
+    }
+
+    /**
+     * Returns a human-readable representation of this group. The format is:
+     * [{@link #getTemplates() templates}].
+     *
+     * @return a human-readable representation of this group
+     */
+    @Override
+    public String toString() {
+      return new Builder(this).toString();
+    }
+
+    /**
+     * <p>A builder to create new {@link Group groups} in a fluent, chained
+     * fashion. Typically used by a developer to refrain the user from
+     * specifying a certain combination of options on the command line.
+     *
+     * <p><strong>NOTE:</strong> A builder can be re-used several times without
+     * affecting previously built options. However, values previously applied to
+     * the builder, stick after creating an option, unless overridden again.
+     */
+    public static final class Builder {
+
+      private boolean required;
+      private final Set<Template> templates;
+
+      /**
+       * Creates a new, uninitialized builder.
+       */
+      Builder() {
+        templates = new HashSet<>();
+      }
+
+      /**
+       * Creates a new builder, initialized with a group's values.
+       *
+       * @param group the settings of the new builder
+       */
+      Builder(Group group) {
+        required = group.required;
+        templates = new HashSet<>(group.templates);
+      }
+
+      /**
+       * Makes this group required.
+       *
+       * @return this builder
+       */
+      public Builder required() {
+        required = true;
+        return this;
+      }
+
+      /**
+       * Adds a template to the new group.
+       *
+       * @param template the template to add
+       * @return this builder
+       * @throws IllegalArgumentException the template is required
+       */
+      public Builder template(Template template) {
+        if (template != null) {
+          if (template.isRequired()) {
+            throw new IllegalArgumentException(
+              "Required template [" + template + "] not allowed inside a group"
+            );
+          }
+          templates.add(template);
+        }
+        return this;
+      }
+
+      /**
+       * Adds templates to the new group.
+       *
+       * @param templates the templates to add
+       * @return this builder
+       * @throws IllegalArgumentException a template is required
+       */
+      public Builder templates(Template... templates) {
+        if (templates != null) {
+          stream(templates).forEach(this::template);
+        }
+        return this;
+      }
+
+      /**
+       * Adds templates to the new group.
+       *
+       * @param templates the templates to add
+       * @return this builder
+       * @throws IllegalArgumentException a template is required
+       */
+      public Builder templates(Iterable<Template> templates) {
+        if (templates != null) {
+          templates.forEach(this::template);
+        }
+        return this;
+      }
+
+      /**
+       * @see Group#toString() Group.toString()
+       */
+      @Override
+      public String toString() {
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+
+        templates.stream()
+          .sorted(Template::byName)
+          .map(Object::toString)
+          .forEach(joiner::add);
+
+        return joiner.toString();
+      }
+
+      /**
+       * Constructs a new group, using the values that were applied to this
+       * builder. Changes made to this builder afterwards, do not affect the
+       * created group. As such, a builder can be re-used several times.
+       *
+       * @return a new group
+       */
+      public Group build() {
+        return new Group(this);
       }
     }
   }
