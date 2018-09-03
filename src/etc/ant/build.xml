@@ -9,6 +9,9 @@
   <!-- Location for additional Ant libraries -->
   <property name="ant.lib.dir" value="${user.home}/.ant/lib"/>
 
+  <!-- Placeholder for the app module path -->
+  <property name="app.module.path" value=""/>
+
   <!-- Classpath to compile main code -->
   <path id="production.classpath">
     <path location="${target.classes}"/>
@@ -57,12 +60,21 @@
     <mkdir dir="${ant.lib.dir}"/>
 
     <!-- Retrieve and download dependencies -->
+    <get src="${ant-contrib}" dest="${ant.lib.dir}" usetimestamp="true"/>
     <get src="${apache-ivy}" dest="${ant.lib.dir}" usetimestamp="true"/>
     <get src="${jcraft-jsch}" dest="${ant.lib.dir}" usetimestamp="true"/>
     <get src="${commons-log}" dest="${ant.lib.dir}" usetimestamp="true"/>
 
+    <!-- Load all task definitions -->
+    <taskdef classpathref="ant.lib.path"
+      resource="net/sf/antcontrib/antcontrib.properties"/>
+
     <taskdef resource="org/apache/ivy/ant/antlib.xml"
       uri="antlib:org.apache.ivy.ant" classpathref="ant.lib.path"/>
+
+    <!-- Initialize the app module path -->
+    <propertyregex property="app.module.path" override="true"
+      input="${app.module}" replace="/" regexp="\.{1}"/>
   </target>
 
   <!-- Resolves Ivy dependencies -->
@@ -81,8 +93,8 @@
 
     <!-- Compile production code -->
     <javac includeantruntime="false" debug="true"
-      source="1.8" srcdir="${src.main.java}"
-      target="1.8" destdir="${target.classes}">
+      source="10" srcdir="${src.main.java}"
+      target="10" destdir="${target.classes}">
 
       <classpath>
         <path refid="production.classpath"/>
@@ -91,8 +103,8 @@
 
     <!-- Compile test code -->
     <javac includeantruntime="false" debug="true"
-      source="1.8" srcdir="${src.test.java}"
-      target="1.8" destdir="${target.testing}">
+      source="10" srcdir="${src.test.java}"
+      target="10" destdir="${target.testing}">
 
       <classpath>
         <path refid="production.classpath"/>
@@ -138,11 +150,21 @@
   <!-- Generates javadoc -->
   <target name="javadoc" depends="init,compile">
     <javadoc
-      sourcepath="${src.main.java}" destdir="${target.javadoc}"
-      windowtitle="${ant.project.name}" classpathref="production.classpath">
+      destdir="${target.javadoc}"
+      windowtitle="${ant.project.name}"
+      classpathref="production.classpath">
+
+      <!-- Include all exported packages -->
+      <packageset dir="${src.main.java}">
+        <include name="${app.module.path}"/>
+        <exclude name="**/internal/**"/>
+      </packageset>
+
+      <!-- Generate html5 output -->
+      <arg value="-html5"/>
 
       <!-- Include reference to the Oracle javadoc -->
-      <link href="https://docs.oracle.com/javase/8/docs/api/"/>
+      <link href="https://docs.oracle.com/javase/10/docs/api/"/>
     </javadoc>
   </target>
 
