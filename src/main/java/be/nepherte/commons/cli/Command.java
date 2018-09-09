@@ -15,6 +15,9 @@
  */
 package be.nepherte.commons.cli;
 
+import be.nepherte.commons.cli.internal.Collections;
+import be.nepherte.commons.cli.internal.Strings;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

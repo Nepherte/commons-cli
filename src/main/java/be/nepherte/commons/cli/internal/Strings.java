@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.nepherte.commons.cli;
+package be.nepherte.commons.cli.internal;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * Utility class for {@code String}-related functionality.
  */
-final class Strings {
+public final class Strings {
 
   /** Pattern that indicates a whitespace character. */
   private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");

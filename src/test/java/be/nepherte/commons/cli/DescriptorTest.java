@@ -23,7 +23,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static be.nepherte.commons.cli.Collections.immutableSetOf;
+import static be.nepherte.commons.cli.internal.Collections.immutableSetOf;
 import static be.nepherte.commons.test.Matchers.optionalWithNoValue;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
