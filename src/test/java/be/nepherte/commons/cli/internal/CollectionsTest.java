@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.nepherte.commons.cli;
+package be.nepherte.commons.cli.internal;
 
 import org.junit.Test;
 

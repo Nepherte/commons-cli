@@ -21,14 +21,15 @@ import be.nepherte.commons.cli.Option;
 import be.nepherte.commons.cli.Option.Group;
 import be.nepherte.commons.cli.Option.Template;
 import be.nepherte.commons.cli.Parser.ParseException;
-import be.nepherte.commons.cli.parser.Exceptions.ExclusiveOptionsException;
-import be.nepherte.commons.cli.parser.Exceptions.MissingArgumentException;
-import be.nepherte.commons.cli.parser.Exceptions.MissingGroupException;
-import be.nepherte.commons.cli.parser.Exceptions.MissingOptionException;
-import be.nepherte.commons.cli.parser.Exceptions.MissingValueException;
-import be.nepherte.commons.cli.parser.Exceptions.TooManyArgumentsException;
-import be.nepherte.commons.cli.parser.Exceptions.TooManyValuesException;
-import be.nepherte.commons.cli.parser.Exceptions.UnrecognizedTokenException;
+
+import be.nepherte.commons.cli.internal.Exceptions.ExclusiveOptionsException;
+import be.nepherte.commons.cli.internal.Exceptions.MissingArgumentException;
+import be.nepherte.commons.cli.internal.Exceptions.MissingGroupException;
+import be.nepherte.commons.cli.internal.Exceptions.MissingOptionException;
+import be.nepherte.commons.cli.internal.Exceptions.MissingValueException;
+import be.nepherte.commons.cli.internal.Exceptions.TooManyArgumentsException;
+import be.nepherte.commons.cli.internal.Exceptions.TooManyValuesException;
+import be.nepherte.commons.cli.internal.Exceptions.UnrecognizedTokenException;
 
 import org.junit.Test;
 

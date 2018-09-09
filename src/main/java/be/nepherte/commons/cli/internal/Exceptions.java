@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.nepherte.commons.cli.parser;
+package be.nepherte.commons.cli.internal;
 
 import be.nepherte.commons.cli.Option;
 import be.nepherte.commons.cli.Parser.ParseException;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 /**
  * Factory class for common parsing exceptions.
  */
-final class Exceptions {
+public final class Exceptions {
 
   /* This class is added to group exceptions which command line parsers may
    * encounter. The actual implementations are hidden as they are merely to test
@@ -41,7 +41,7 @@ final class Exceptions {
   /**
    * Exception thrown when a command encounters an unrecognized token.
    */
-  static final class UnrecognizedTokenException extends ParseException {
+  public static final class UnrecognizedTokenException extends ParseException {
     private static final long serialVersionUID = 2418916161039553401L;
 
     /**
@@ -49,7 +49,7 @@ final class Exceptions {
      *
      * @param token the unrecognized token
      */
-    UnrecognizedTokenException(String token) {
+    public UnrecognizedTokenException(String token) {
       super("Unrecognized token [" + token + "]");
     }
   }
@@ -57,7 +57,7 @@ final class Exceptions {
   /**
    * Exception thrown when a command is missing a required option.
    */
-  static final class MissingOptionException extends ParseException {
+  public static final class MissingOptionException extends ParseException {
     private static final long serialVersionUID = -750674298160485010L;
 
     /**
@@ -65,7 +65,7 @@ final class Exceptions {
      *
      * @param template the template of the missing option
      */
-    MissingOptionException(Option.Template template) {
+    public MissingOptionException(Option.Template template) {
       super("Missing required option [" + template + "]");
     }
   }
@@ -73,7 +73,7 @@ final class Exceptions {
   /**
    * Exception thrown when a command is missing an option from a required group.
    */
-  static final class MissingGroupException extends ParseException {
+  public static final class MissingGroupException extends ParseException {
     private static final long serialVersionUID = 4611455865956293357L;
 
     /**
@@ -81,7 +81,7 @@ final class Exceptions {
      *
      * @param group the missing group
      */
-    MissingGroupException(Option.Group group) {
+    public MissingGroupException(Option.Group group) {
       super("Missing required group [" + group + "]");
     }
   }
@@ -89,7 +89,7 @@ final class Exceptions {
   /**
    * Exception thrown when a command is missing a required argument.
    */
-  static final class MissingArgumentException extends ParseException {
+  public static final class MissingArgumentException extends ParseException {
     private static final long serialVersionUID = 6038171462219781253L;
 
     /**
@@ -97,7 +97,7 @@ final class Exceptions {
      *
      * @param command the command missing an argument
      */
-    MissingArgumentException(String command) {
+    public MissingArgumentException(String command) {
       super("Missing argument(s) for command [" + command + "]");
     }
   }
@@ -105,7 +105,7 @@ final class Exceptions {
   /**
    * Exception thrown when a command has too many arguments.
    */
-  static final class TooManyArgumentsException extends ParseException {
+  public static final class TooManyArgumentsException extends ParseException {
     private static final long serialVersionUID = -7644793293717786265L;
 
     /**
@@ -113,7 +113,7 @@ final class Exceptions {
      *
      * @param command the command with too many arguments
      */
-    TooManyArgumentsException(String command) {
+    public TooManyArgumentsException(String command) {
       super("Too many arguments for command [" + command + "]");
     }
   }
@@ -121,7 +121,7 @@ final class Exceptions {
   /**
    * Exception thrown when an option is missing a value.
    */
-  static final class MissingValueException extends ParseException {
+  public static final class MissingValueException extends ParseException {
     private static final long serialVersionUID = -718092007041448691L;
 
     /**
@@ -129,7 +129,7 @@ final class Exceptions {
      *
      * @param template the template of the option missing a value
      */
-    MissingValueException(Option.Template template) {
+    public MissingValueException(Option.Template template) {
       super("Missing value for option [" + template + "]");
     }
   }
@@ -137,7 +137,7 @@ final class Exceptions {
   /**
    * Exception thrown when an option has too many values.
    */
-  static final class TooManyValuesException extends ParseException {
+  public static final class TooManyValuesException extends ParseException {
     private static final long serialVersionUID = -1451812468054340266L;
 
     /**
@@ -145,7 +145,7 @@ final class Exceptions {
      *
      * @param template the template of the option with too many values
      */
-    TooManyValuesException(Option.Template template) {
+    public TooManyValuesException(Option.Template template) {
       super("Too many values for option [" + template + "]");
     }
   }
@@ -153,7 +153,7 @@ final class Exceptions {
   /**
    * Exception thrown when a command has mutually exclusive options.
    */
-  static final class ExclusiveOptionsException extends ParseException {
+  public static final class ExclusiveOptionsException extends ParseException {
     private static final long serialVersionUID = 356042360910950845L;
 
     /**
@@ -161,7 +161,7 @@ final class Exceptions {
      *
      * @param templates the templates of the mutually exclusive options
      */
-    ExclusiveOptionsException(Option.Template... templates) {
+    public ExclusiveOptionsException(Option.Template... templates) {
       super("Mutually exclusive options " + Arrays.toString(templates));
     }
   }

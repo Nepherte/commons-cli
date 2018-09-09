@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.nepherte.commons.cli;
+package be.nepherte.commons.cli.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Utility class for {@code Collection}-related functionality.
  */
-final class Collections {
+public final class Collections {
 
   /**
    * Creates a new {@code Collections}.

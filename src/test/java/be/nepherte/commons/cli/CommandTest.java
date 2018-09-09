@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static be.nepherte.commons.cli.Collections.immutableListOf;
+import static be.nepherte.commons.cli.internal.Collections.immutableListOf;
 import static be.nepherte.commons.test.Matchers.optionalWithNoValue;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
