@@ -1,9 +1,9 @@
 # Source code language.
 language: java
 
-# Support Oracle JDK 10+
+# Support OpenJDK 11+
 jdk:
-- oraclejdk10
+- openjdk11
 
 # Decrypt sftp secrets.
 before_install:

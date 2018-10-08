@@ -609,7 +609,7 @@ public final class Option {
        * @return this builder
        */
       public Builder description(String description) {
-        this.description = Strings.whitespaceToNull(description);
+        this.description = Strings.blankToNull(description);
         return this;
       }
 
@@ -664,7 +664,7 @@ public final class Option {
        * @return this builder
        */
       public Builder valueName(String valueName) {
-        this.valueName = Strings.whitespaceToNull(valueName);
+        this.valueName = Strings.blankToNull(valueName);
         return this;
       }
 

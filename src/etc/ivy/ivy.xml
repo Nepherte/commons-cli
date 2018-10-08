@@ -29,7 +29,8 @@
 
     <!-- Testing dependencies -->
     <dependency org="org.junit" name="junit" rev="4.12" conf="testing"/>
-    <dependency org="org.mockito" name="mockito-core" rev="2.20.1" conf="testing"/>
+    <dependency org="org.mockito" name="mockito-core" rev="2.23.0" conf="testing"/>
+    <dependency org="org.mockito" name="mockito-inline" rev="2.23.0" conf="testing"/>
     <dependency org="org.hamcrest" name="hamcrest-core" rev="1.3" conf="testing"/>
     <dependency org="org.hamcrest" name="hamcrest-library" rev="1.3" conf="testing"/>
   </dependencies>

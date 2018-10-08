@@ -187,7 +187,7 @@ public final class Command {
    * @return the option with such name, or {@code null}
    */
   private static Option resolveOption(String name, Iterable<Option> options) {
-    if (Strings.isNullOrWhitespace(name)) {
+    if (Strings.isNullOrBlank(name)) {
       return null;
     }
 
@@ -342,7 +342,7 @@ public final class Command {
      * @return this builder
      */
     public Builder argument(String argument) {
-      if (!Strings.isNullOrWhitespace(argument)) {
+      if (!Strings.isNullOrBlank(argument)) {
         arguments.add(argument);
       }
       return this;

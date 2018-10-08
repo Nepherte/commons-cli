@@ -93,8 +93,8 @@
 
     <!-- Compile production code -->
     <javac includeantruntime="false" debug="true"
-      source="10" srcdir="${src.main.java}"
-      target="10" destdir="${target.classes}">
+      source="11" srcdir="${src.main.java}"
+      target="11" destdir="${target.classes}">
 
       <classpath>
         <path refid="production.classpath"/>
@@ -103,8 +103,8 @@
 
     <!-- Compile test code -->
     <javac includeantruntime="false" debug="true"
-      source="10" srcdir="${src.test.java}"
-      target="10" destdir="${target.testing}">
+      source="11" srcdir="${src.test.java}"
+      target="11" destdir="${target.testing}">
 
       <classpath>
         <path refid="production.classpath"/>
@@ -164,7 +164,7 @@
       <arg value="-html5"/>
 
       <!-- Include reference to the Oracle javadoc -->
-      <link href="https://docs.oracle.com/javase/10/docs/api/"/>
+      <link href="https://docs.oracle.com/javase/11/docs/api/"/>
     </javadoc>
   </target>
 
