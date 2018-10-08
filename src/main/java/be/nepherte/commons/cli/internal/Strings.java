@@ -15,7 +15,6 @@
  */
 package be.nepherte.commons.cli.internal;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -34,13 +33,13 @@ public final class Strings {
   }
 
   /**
-   * Converts whitespace strings to {@code null}.
+   * Converts blank strings to {@code null}.
    *
    * @param string the string to convert
-   * @return {@code null} if whitespace-only
+   * @return {@code null} if blank
    */
-  public static String whitespaceToNull(String string) {
-    return isNullOrWhitespace(string) ? null : string;
+  public static String blankToNull(String string) {
+    return isNullOrBlank(string) ? null : string;
   }
 
   /**
@@ -74,13 +73,13 @@ public final class Strings {
   }
 
   /**
-   * Indicates if the string is {@code null} or whitespace.
+   * Indicates if the string is {@code null} or blank.
    *
    * @param string the string to test
-   * @return true if {@code null} or whitespace
+   * @return true if {@code null} or blank
    */
-  public static boolean isNullOrWhitespace(String string) {
-    return string == null || string.trim().isEmpty();
+  public static boolean isNullOrBlank(String string) {
+    return string == null || string.isBlank();
   }
 
   /**
@@ -91,25 +90,5 @@ public final class Strings {
    */
   public static boolean containsWhitespace(String string) {
     return WHITESPACE_PATTERN.matcher(string).find();
-  }
-
-  /**
-   * Repeats a character by a given amount.
-   *
-   * @param c the character to repeat
-   * @param n the amount to repeat it
-   * @return a character repeated by the given amount
-   * @throws IllegalArgumentException {@code n} is negative
-   */
-  public static String repeat(char c, int n) {
-    if (n < 0) {
-      throw new IllegalArgumentException(
-        "Cannot repeat character [" + c + "] by negative amount [" + n + "]"
-      );
-    }
-
-    char[] data = new char[n];
-    Arrays.fill(data, c);
-    return String.valueOf(data);
   }
 }

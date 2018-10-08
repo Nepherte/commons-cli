@@ -54,21 +54,21 @@ public final class StringsTest {
   }
 
   @Test
-  public void isNullOrWhitespace() {
-    assertThat(Strings.isNullOrWhitespace(null), is(true));
-    assertThat(Strings.isNullOrWhitespace(""), is(true));
-    assertThat(Strings.isNullOrWhitespace("  "), is(true));
-    assertThat(Strings.isNullOrWhitespace("\t"), is(true));
-    assertThat(Strings.isNullOrWhitespace("a"), is(false));
+  public void isNullOrBlank() {
+    assertThat(Strings.isNullOrBlank(null), is(true));
+    assertThat(Strings.isNullOrBlank(""), is(true));
+    assertThat(Strings.isNullOrBlank("  "), is(true));
+    assertThat(Strings.isNullOrBlank("\t"), is(true));
+    assertThat(Strings.isNullOrBlank("a"), is(false));
   }
 
   @Test
-  public void whitespaceToNull() {
-    assertThat(Strings.whitespaceToNull(null), nullValue());
-    assertThat(Strings.whitespaceToNull(""), nullValue());
-    assertThat(Strings.whitespaceToNull("  "), nullValue());
-    assertThat(Strings.whitespaceToNull("\t"), nullValue());
-    assertThat(Strings.whitespaceToNull("a"), is("a"));
+  public void blankToNull() {
+    assertThat(Strings.blankToNull(null), nullValue());
+    assertThat(Strings.blankToNull(""), nullValue());
+    assertThat(Strings.blankToNull("  "), nullValue());
+    assertThat(Strings.blankToNull("\t"), nullValue());
+    assertThat(Strings.blankToNull("a"), is("a"));
   }
 
   @Test
@@ -82,22 +82,5 @@ public final class StringsTest {
   @Test(expected = NullPointerException.class)
   public void containsWhitespaceNull() {
     Strings.containsWhitespace(null);
-  }
-
-  @Test
-  public void repeat() {
-    String result = Strings.repeat('a', 6);
-    assertThat(result, is("aaaaaa"));
-  }
-
-  @Test
-  public void repeatZeroTimes() {
-    String result = Strings.repeat('a', 0);
-    assertThat(result.isEmpty(), is(true));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void repeatNegativeAmount() {
-    Strings.repeat('a', -1);
   }
 }
