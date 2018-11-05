@@ -19,7 +19,6 @@ import be.nepherte.commons.cli.Option.Template;
 
 import org.junit.Test;
 
-import static be.nepherte.commons.test.Matchers.optionalWithNoValue;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -41,21 +40,24 @@ public class TemplateTest {
     assertThat(new Template(builder).getShortName(), optionalWithValue("b"));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullShortName() {
-    Template.Builder builder = Option.newTemplate().shortName(null);
-    assertThat(new Template(builder).getShortName(), optionalWithNoValue());
-  }
-
-  @Test
-  public void blankShortName() {
-    Template.Builder builder = Option.newTemplate().shortName("");
-    assertThat(new Template(builder).getShortName(), optionalWithNoValue());
+    Option.newTemplate().shortName(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void shortNameWithWhitespace() {
+  public void emptyShortName() {
+    Option.newTemplate().shortName("");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shortNameWithSpace() {
     Option.newTemplate().shortName("short\tname");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void dashOnlyShortName() {
+    Option.newTemplate().shortName("--");
   }
 
   @Test
@@ -64,21 +66,24 @@ public class TemplateTest {
     assertThat(new Template(builder).getLongName(), optionalWithValue("block"));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullLongName() {
-    Template.Builder builder = Option.newTemplate().longName(null);
-    assertThat(new Template(builder).getLongName(), optionalWithNoValue());
-  }
-
-  @Test
-  public void blankLongName() {
-    Template.Builder builder = Option.newTemplate().longName("");
-    assertThat(new Template(builder).getLongName(), optionalWithNoValue());
+    Option.newTemplate().longName(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void longNameWithWhitespace() {
+  public void emptyLongName() {
+    Option.newTemplate().longName("");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void longNameWithSpace() {
     Option.newTemplate().longName("long\tname");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void dashOnlyLongName() {
+    Option.newTemplate().longName("--");
   }
 
   @Test
@@ -121,16 +126,14 @@ public class TemplateTest {
     assertThat(new Template(builder).getDescription(), optionalWithValue("ab"));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullDescription() {
-    Template.Builder builder = Option.newTemplate().description(null);
-    assertThat(new Template(builder).getDescription(), optionalWithNoValue());
+    Option.newTemplate().description(null);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void blankDescription() {
-    Template.Builder builder = Option.newTemplate().description("");
-    assertThat(new Template(builder).getDescription(), optionalWithNoValue());
+    Option.newTemplate().description("  ");
   }
 
   @Test
@@ -192,16 +195,14 @@ public class TemplateTest {
     assertThat(new Template(builder).getValueName(), optionalWithValue("SIZE"));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullValueName() {
-    Template.Builder builder = Option.newTemplate().valueName(null);
-    assertThat(new Template(builder).getValueName(), optionalWithNoValue());
+    Option.newTemplate().valueName(null);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void blankValueName() {
-    Template.Builder builder = Option.newTemplate().valueName("");
-    assertThat(new Template(builder).getValueName(), optionalWithNoValue());
+    Option.newTemplate().valueName("  ");
   }
 
   @Test(expected = IllegalStateException.class)

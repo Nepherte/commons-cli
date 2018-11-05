@@ -16,7 +16,6 @@
 package be.nepherte.commons.cli;
 
 import be.nepherte.commons.cli.internal.Collections;
-import be.nepherte.commons.cli.internal.Strings;
 
 import java.util.HashSet;
 import java.util.ArrayList;
@@ -24,10 +23,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static be.nepherte.commons.cli.internal.Preconditions.*;
+import static be.nepherte.commons.cli.internal.Predicates.*;
+
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
-import static java.util.Objects.requireNonNull;
 
 /**
  * <p>An <em>immutable</em> option that modifies the behavior of a {@code
@@ -66,9 +70,10 @@ public final class Option {
    *
    * @param template the settings of the new builder
    * @return a pre-initialized builder to create new options
+   * @throws IllegalArgumentException the template is null
    */
   public static Builder newInstance(Template template) {
-    requireNonNull(template, "Cannot create builder for template [null]");
+    requireArg(template, notNull(), "The template is [%s]");
     return new Builder(template);
   }
 
@@ -96,6 +101,7 @@ public final class Option {
    * can be re-used several times.
    *
    * @param builder the settings of the new option
+   * @throws NullPointerException the builder is null
    */
   Option(Builder builder) {
     shortName = builder.shortName;
@@ -197,6 +203,7 @@ public final class Option {
      * Creates a new builder, initialized with a template's values.
      *
      * @param template the settings of the new builder
+     * @throws NullPointerException the template is null
      */
     Builder(Template template) {
       shortName = template.shortName;
@@ -208,6 +215,7 @@ public final class Option {
      * Creates a new builder, initialized with an option's values.
      *
      * @param option the settings of the new builder
+     * @throws NullPointerException the option is null
      */
     Builder(Option option) {
       shortName = option.shortName;
@@ -220,7 +228,8 @@ public final class Option {
      *
      * @param shortName the short name of the new option
      * @return this builder
-     * @throws IllegalArgumentException the name contains a space
+     * @throws IllegalArgumentException the name is null or empty
+     * @throws IllegalArgumentException the name has a space
      */
     public Builder shortName(String shortName) {
       this.shortName = parseOptionName(shortName);
@@ -232,7 +241,8 @@ public final class Option {
      *
      * @param longName the long name of the new option
      * @return this builder
-     * @throws IllegalArgumentException the name contains a space
+     * @throws IllegalArgumentException the name is null or empty
+     * @throws IllegalArgumentException the name has a space
      */
     public Builder longName(String longName) {
       this.longName = parseOptionName(longName);
@@ -240,41 +250,41 @@ public final class Option {
     }
 
     /**
-     * Adds a value to the new option. {@code Null} values are ignored.
+     * Adds a value to the new option.
      *
      * @param value the value to add
      * @return this builder
+     * @throws IllegalArgumentException the value is null
      */
     public Builder value(String value) {
-      if (value != null) {
-        values.add(value);
-      }
+      requireArg(value, notNull(), "The value is [%s]");
+      values.add(value);
       return this;
     }
 
     /**
-     * Adds values to the new option. {@code Null} values are ignored.
+     * Adds values to the new option.
      *
      * @param values the values to add
      * @return this builder
+     * @throws IllegalArgumentException the array or a value is null
      */
     public Builder values(Iterable<String> values) {
-      if (values != null) {
-        values.forEach(this::value);
-      }
+      requireArg(values, notNull(), "The value iterable is [%s]");
+      values.forEach(this::value);
       return this;
     }
 
     /**
-     * Adds values to the new option. {@code Null} values are ignored.
+     * Adds values to the new option.
      *
      * @param values the values to add
      * @return this builder
+     * @throws IllegalArgumentException the iterable or a value is null
      */
     public Builder values(String... values) {
-      if (values != null) {
-        stream(values).forEach(this::value);
-      }
+      requireArg(values, notNull(), "The value array is [%s]");
+      stream(values).forEach(this::value);
       return this;
     }
 
@@ -287,10 +297,9 @@ public final class Option {
      * @throws IllegalStateException the built option is invalid
      */
     public Option build() {
-      if (shortName == null && longName == null) {
-        throw new IllegalStateException("Option has no name");
-      }
-
+      requireState(this, hasShortName().or(hasLongName()),
+        "The option has neither a short name nor a long name"
+      );
       return new Option(this);
     }
 
@@ -321,6 +330,24 @@ public final class Option {
 
       return builder.toString();
     }
+
+    /**
+     * Predicate that tests for the presence of a short name.
+     *
+     * @return a predicate that tests for the presence of a short name
+     */
+    private static Predicate<Builder> hasShortName() {
+      return notNull(builder -> builder.shortName);
+    }
+
+    /**
+     * Predicate that tests for the presence of a long name.
+     *
+     * @return a predicate that tests for the presence of a long name
+     */
+    private static Predicate<Builder> hasLongName() {
+      return notNull(builder -> builder.longName);
+    }
   }
 
   /**
@@ -332,25 +359,25 @@ public final class Option {
    * </ol>
    *
    * @param name the option name to parse
-   * @return the parsed option name, or {@code null} if blank
-   * @throws IllegalArgumentException the name contains a space
+   * @return the parsed option name
+   * @throws IllegalArgumentException the name is null or empty
+   * @throws IllegalArgumentException the name has a space
    */
   private static String parseOptionName(String name) {
-    // Bounce back null names.
-    if (name == null) {
-      return null;
-    }
+    // Null names are not allowed.
+    requireArg(name, notNull(), "The name is [%s]");
 
-    // Option names never contain whitespace.
-    if (Strings.containsWhitespace(name)) {
-      throw new IllegalArgumentException(
-        "Option name [" + name + "] contains whitespace"
-      );
-    }
+    // Names cannot contain space(s).
+    requireArg(name, noSpace(), "The name [%s] has a space");
 
-    // Remove leading hyphens from the name.
-    String trimmed = NAME_PREFIX_PATTERN.matcher(name).replaceFirst("");
-    return Strings.emptyToNull(trimmed);
+   // Remove leading hyphens from the name.
+    Matcher matcher = NAME_PREFIX_PATTERN.matcher(name);
+    String stripped = matcher.replaceFirst("");
+
+    // The name without hyphens cannot be empty.
+    requireArg(stripped, notEmpty(), "The name [%s] is empty");
+
+    return stripped;
   }
 
   /**
@@ -408,6 +435,7 @@ public final class Option {
      * @return the name of this template
      */
     public String getName() {
+      // The builder guarantees that at least one exists.
       return shortName == null ? longName : shortName;
     }
 
@@ -521,11 +549,11 @@ public final class Option {
      * @param aTemplate1 the first template
      * @param aTemplate2 the second template
      * @return see {@link Comparable#compareTo}
-     * @throws NullPointerException a template is {@code null}
+     * @throws IllegalArgumentException a template is {@code null}
      */
     static int byName(Template aTemplate1, Template aTemplate2) {
-      requireNonNull(aTemplate1, "The first template is [null]");
-      requireNonNull(aTemplate2, "The second template is [null]");
+      requireArg(aTemplate1, notNull(), "The first template is [%s]");
+      requireArg(aTemplate2, notNull(), "The second template is [%s]");
       return aTemplate1.getName().compareTo(aTemplate2.getName());
     }
 
@@ -583,7 +611,8 @@ public final class Option {
        *
        * @param shortName the short name of the new template
        * @return this builder
-       * @throws IllegalArgumentException the name contains a space
+       * @throws IllegalArgumentException the name is null or empty
+       * @throws IllegalArgumentException the name has a space
        */
       public Builder shortName(String shortName) {
         this.shortName = parseOptionName(shortName);
@@ -595,7 +624,8 @@ public final class Option {
        *
        * @param longName the long name of the new template
        * @return this builder
-       * @throws IllegalArgumentException the name contains a space
+       * @throws IllegalArgumentException the name is null or empty
+       * @throws IllegalArgumentException the name has a space
        */
       public Builder longName(String longName) {
         this.longName = parseOptionName(longName);
@@ -607,9 +637,12 @@ public final class Option {
        *
        * @param description the description of the new template
        * @return this builder
+       * @throws IllegalArgumentException the description is null or blank
        */
       public Builder description(String description) {
-        this.description = Strings.blankToNull(description);
+        requireArg(description, notNull(), "The description is [%s]");
+        requireArg(description, notBlank(), "The description [%s] is blank");
+        this.description = description;
         return this;
       }
 
@@ -631,11 +664,7 @@ public final class Option {
        * @throws IllegalArgumentException the number of values is negative
        */
       public Builder minValues(int minValues) {
-        if (minValues < 0) {
-          throw new IllegalArgumentException(
-            "Minimum number of values is negative [" + minValues + "]"
-          );
-        }
+        requireArg(minValues, greaterThan(-1), "Min values [%d] is negative");
         this.minValues = minValues;
         return this;
       }
@@ -648,11 +677,7 @@ public final class Option {
        * @throws IllegalArgumentException the number of values is negative
        */
       public Builder maxValues(int maxValues) {
-        if (maxValues < 0) {
-          throw new IllegalArgumentException(
-            "Maximum number of values is negative [" + maxValues + "]"
-          );
-        }
+        requireArg(maxValues, greaterThan(-1), "Max values [%d] is negative");
         this.maxValues = maxValues;
         return this;
       }
@@ -662,9 +687,12 @@ public final class Option {
        *
        * @param valueName the name of the option values
        * @return this builder
+       * @throws IllegalArgumentException the value name is null or blank
        */
       public Builder valueName(String valueName) {
-        this.valueName = Strings.blankToNull(valueName);
+        requireArg(valueName, notNull(), "The value name is [%s]");
+        requireArg(valueName, notBlank(), "The value name [%s] is blank");
+        this.valueName = valueName;
         return this;
       }
 
@@ -677,17 +705,12 @@ public final class Option {
        * @throws IllegalStateException the template is invalid
        */
       public Template build() {
-        if (shortName == null && longName == null) {
-          throw new IllegalStateException("Template has no name");
-        }
-
-        if (maxValues < minValues) {
-          throw new IllegalStateException(
-            "Template requires more values than allowed" +
-            "[" + maxValues + " < " + minValues + "]"
-          );
-        }
-
+        requireState(this, hasShortName().or(hasLongName()),
+          "Template has neither a short name nor a long name"
+        );
+        requireState(minValues, not(greaterThan(maxValues)), format(
+          "Min values [%%d] greater than max values [%d]", maxValues)
+        );
         return new Template(this);
       }
 
@@ -733,6 +756,24 @@ public final class Option {
 
         return builder.toString();
       }
+
+      /**
+       * Predicate that tests for the presence of a short name.
+       *
+       * @return a predicate that tests for the presence of a short name
+       */
+      private static Predicate<Option.Template.Builder> hasShortName() {
+        return notNull(builder -> builder.shortName);
+      }
+
+      /**
+       * Predicate that tests for tne presence of a long name.
+       *
+       * @return a predicate that tests for the presence of a long name
+       */
+      private  static Predicate<Option.Template.Builder> hasLongName() {
+        return notNull(builder -> builder.longName);
+      }
     }
   }
 
@@ -758,6 +799,7 @@ public final class Option {
      * be re-used several times.
      *
      * @param builder the settings of the new descriptor
+     * @throws NullPointerException the builder is null
      */
     Group(Builder builder) {
       this.required = builder.required;
@@ -818,6 +860,7 @@ public final class Option {
        * Creates a new builder, initialized with a group's values.
        *
        * @param group the settings of the new builder
+       * @throws NullPointerException the group is null
        */
       Builder(Group group) {
         required = group.required;
@@ -839,17 +882,13 @@ public final class Option {
        *
        * @param template the template to add
        * @return this builder
+       * @throws IllegalArgumentException the template is null
        * @throws IllegalArgumentException the template is required
        */
       public Builder template(Template template) {
-        if (template != null) {
-          if (template.isRequired()) {
-            throw new IllegalArgumentException(
-              "Required template [" + template + "] not allowed inside a group"
-            );
-          }
-          templates.add(template);
-        }
+        requireArg(template, notNull(), "The template is [%s]");
+        requireArg(template, notRequired(), "The template [%s] is required");
+        templates.add(template);
         return this;
       }
 
@@ -858,12 +897,12 @@ public final class Option {
        *
        * @param templates the templates to add
        * @return this builder
+       * @throws IllegalArgumentException the array or a template is null
        * @throws IllegalArgumentException a template is required
        */
       public Builder templates(Template... templates) {
-        if (templates != null) {
-          stream(templates).forEach(this::template);
-        }
+        requireArg(templates, notNull(), "The template array is [%s]");
+        stream(templates).forEach(this::template);
         return this;
       }
 
@@ -872,12 +911,12 @@ public final class Option {
        *
        * @param templates the templates to add
        * @return this builder
+       * @throws IllegalArgumentException the iterable or a template is null
        * @throws IllegalArgumentException a template is required
        */
       public Builder templates(Iterable<Template> templates) {
-        if (templates != null) {
-          templates.forEach(this::template);
-        }
+        requireArg(templates, notNull(), "The template iterable is [%s]");
+        templates.forEach(this::template);
         return this;
       }
 

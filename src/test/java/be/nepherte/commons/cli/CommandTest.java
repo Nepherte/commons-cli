@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static be.nepherte.commons.cli.internal.Collections.immutableListOf;
-import static be.nepherte.commons.test.Matchers.optionalWithNoValue;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,14 +40,13 @@ public class CommandTest {
     assertThat(new Command(builder).getName(), optionalWithValue("ls"));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullName() {
-    Command command = Command.newInstance().name(null).build();
-    assertThat(command.getName(), optionalWithNoValue());
+    Command.newInstance().name(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void whitespaceName() {
+  public void nameWithSpace() {
     Command.newInstance().name("command\tname");
   }
 
@@ -79,7 +77,7 @@ public class CommandTest {
   }
 
   @Test
-  public void optionList() {
+  public void optionIterable() {
     Option o1 = mock(Option.class);
     when(o1.getShortName()).thenReturn(Optional.of("a"));
     when(o1.getLongName()).thenReturn(Optional.empty());
@@ -97,6 +95,11 @@ public class CommandTest {
     assertThat(command.hasOption("b"), is(true));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void nullOptionIterable() {
+    Command.newInstance().options((Iterable<Option>) null);
+  }
+
   @Test
   public void optionArray() {
     Option o1 = mock(Option.class);
@@ -112,6 +115,11 @@ public class CommandTest {
 
     assertThat(command.hasOption("a"), is(true));
     assertThat(command.hasOption("b"), is(true));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void nullOptionArray() {
+    Command.newInstance().options((Option[]) null);
   }
 
   @Test
@@ -173,7 +181,8 @@ public class CommandTest {
   @Test
   public void whitespaceArgument() {
     Command.Builder builder = Command.newInstance().argument("  ");
-    assertThat(new Command(builder).argumentCount(), is(0));
+    assertThat(new Command(builder).argumentCount(), is(1));
+    assertThat(new Command(builder).getArgument(0), is("  "));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -184,27 +193,39 @@ public class CommandTest {
   }
 
   @Test
-  public void argumentList() {
-    List<String> args = Arrays.asList("arg1", null, "arg3");
+  public void argumentIterable() {
+    List<String> args = Arrays.asList("arg1", "arg2", "arg3");
 
     Command.Builder builder = Command.newInstance().arguments(args);
     Command command = new Command(builder);
 
-    assertThat(command.argumentCount(), is(2));
+    assertThat(command.argumentCount(), is(3));
     assertThat(command.getArgument(0), is("arg1"));
-    assertThat(command.getArgument(1), is("arg3"));
+    assertThat(command.getArgument(1), is("arg2"));
+    assertThat(command.getArgument(2), is("arg3"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void nullArgumentIterable() {
+    Command.newInstance().arguments((Iterable<String>) null);
   }
 
   @Test
   public void argumentArray() {
-    String[] args = {"arg1", null, "arg3"};
+    String[] args = {"arg1", "arg2", "arg3"};
 
     Command.Builder builder = Command.newInstance().arguments(args);
     Command command = new Command(builder);
 
-    assertThat(command.argumentCount(), is(2));
+    assertThat(command.argumentCount(), is(3));
     assertThat(command.getArgument(0), is("arg1"));
-    assertThat(command.getArgument(1), is("arg3"));
+    assertThat(command.getArgument(1), is("arg2"));
+    assertThat(command.getArgument(2), is("arg3"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void nullArgumentArray() {
+    Command.newInstance().arguments((String[]) null);
   }
 
   @Test

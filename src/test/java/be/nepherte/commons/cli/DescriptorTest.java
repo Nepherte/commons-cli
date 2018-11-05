@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static be.nepherte.commons.cli.internal.Collections.immutableSetOf;
-import static be.nepherte.commons.test.Matchers.optionalWithNoValue;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,15 +47,14 @@ public class DescriptorTest {
     assertThat(new Descriptor(builder).getName(), optionalWithValue("name"));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullName() {
-    Descriptor descriptor = Command.newDescriptor().name(null).build();
-    assertThat(descriptor.getName(), optionalWithNoValue());
+    Command.newDescriptor().name(null);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void whitespaceName() {
-    Command.newDescriptor().name("  ").build();
+  public void blankName() {
+    Command.newDescriptor().name("  ");
   }
 
   @Test
@@ -144,10 +142,9 @@ public class DescriptorTest {
     assertThat(descriptor.getRequiredTemplates(), contains(template));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullTemplate() {
-    Descriptor.Builder builder = Command.newDescriptor().template(null);
-    assertThat(new Descriptor(builder).getTemplates(), emptyIterable());
+    Command.newDescriptor().template(null);
   }
 
   @Test
@@ -170,6 +167,11 @@ public class DescriptorTest {
     assertThat(descriptor.getTemplates(), containsInAnyOrder(t1, t2));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void nullTemplateArray() {
+    Command.newDescriptor().templates((Template[]) null);
+  }
+
   @Test
   public void templateIterable() {
     Template t1 = mock(Template.class);
@@ -190,22 +192,9 @@ public class DescriptorTest {
     assertThat(descriptor.getTemplates(), containsInAnyOrder(t1, t2));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullTemplateIterable() {
-    Descriptor.Builder builder = Command.newDescriptor();
-    builder = builder.templates((Iterable<Template>) null);
-    Descriptor descriptor = new Descriptor(builder);
-
-    assertThat(descriptor.getTemplates(), emptyIterable());
-  }
-
-  @Test
-  public void nullTemplateArray() {
-    Descriptor.Builder builder = Command.newDescriptor();
-    builder = builder.templates(null, null);
-    Descriptor descriptor = new Descriptor(builder);
-
-    assertThat(descriptor.getTemplates(), emptyIterable());
+    Command.newDescriptor().templates((Iterable<Template>) null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
@@ -262,10 +251,9 @@ public class DescriptorTest {
     assertThat(descriptor.getRequiredGroups(), containsInAnyOrder(g));
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullGroup() {
-    Descriptor.Builder builder = Command.newDescriptor().group(null);
-    assertThat(new Descriptor(builder).getGroups(), emptyIterable());
+    Command.newDescriptor().group(null);
   }
 
   @Test
@@ -292,6 +280,11 @@ public class DescriptorTest {
     assertThat(descriptor.getRequiredGroups(), emptyIterable());
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void nullGroupArray() {
+    Command.newDescriptor().groups((Option.Group[]) null);
+  }
+
   @Test
   public void groupIterable() {
     Template templateA = mock(Template.class);
@@ -316,20 +309,9 @@ public class DescriptorTest {
     assertThat(descriptor.getRequiredGroups(), emptyIterable());
   }
 
-  @Test
-  public void nullGroupArray() {
-    Descriptor.Builder builder = Command.newDescriptor();
-    builder = builder.groups(null, null, null);
-    Descriptor descriptor = new Descriptor(builder);
-    assertThat(descriptor.getGroups(), emptyIterable());
-  }
-
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void nullGroupIterable() {
-    Descriptor.Builder builder = Command.newDescriptor();
-    builder = builder.groups((Iterable<Option.Group>) null);
-    Descriptor descriptor = new Descriptor(builder);
-    assertThat(descriptor.getGroups(), emptyIterable());
+    Command.newDescriptor().groups((Iterable<Option.Group>) null);
   }
 
   @Test(expected = UnsupportedOperationException.class)
