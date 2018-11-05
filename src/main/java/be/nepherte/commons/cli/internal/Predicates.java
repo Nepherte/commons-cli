@@ -15,7 +15,10 @@
  */
 package be.nepherte.commons.cli.internal;
 
+import be.nepherte.commons.cli.Option;
+
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -92,7 +95,88 @@ public final class Predicates {
    * @param <T> the type of input for the predicate
    * @return a new predicate that tests for non-null values
    */
-  public static <T> Predicate<T> nonNull() {
+  public static <T> Predicate<T> notNull() {
     return Objects::nonNull;
+  }
+
+  /**
+   * Predicate that tests for non-null values.
+   *
+   * @param function the function that provides test values
+   * @param <T> the type of input for the predicate
+   * @return a new predicate that tests for non-null values
+   */
+  public static <T> Predicate<T> notNull(Function<T,?> function) {
+    return object -> Objects.nonNull(function.apply(object));
+  }
+
+  /**
+   * Predicate that tests whether values are greater than another value.
+   *
+   * @param value the value to compare with
+   * @param <T> the type of input for the predicate
+   * @return a new predicate that compares values
+   */
+  public static <T> Predicate<Comparable<T>> greaterThan(T value) {
+    return comparable -> comparable.compareTo(value) > 0;
+  }
+
+  /**
+   * Predicate that tests whether values are smaller than another value.
+   *
+   * @param value the value to compare with
+   * @param <T> the type of input for the predicate
+   * @return a new predicate that compares values
+   */
+  public static <T> Predicate<Comparable<T>> smallerThan(T value) {
+    return comparable -> comparable.compareTo(value) < 0;
+  }
+
+  /**
+   * Predicate that tests whether values are in a specified range.
+   *
+   * @param minValue the minimum value (exclusive)
+   * @param maxValue the maximum value (exclusive)
+   * @param <T> the type of input for the predicate
+   * @return a new predicate that compares values
+   */
+  public static <T> Predicate<Comparable<T>> between(T minValue, T maxValue) {
+    return and(greaterThan(minValue), smallerThan(maxValue));
+  }
+
+  /**
+   * Predicate that tests for strings with no spaces.
+   *
+   * @return a new predicate that tests for strings with no spaces
+   */
+  public static Predicate<String> noSpace() {
+    return not(Strings::containsWhitespace);
+  }
+
+  /**
+   * Predicate that tests for non-empty strings.
+   *
+   * @return a new predicate that tests for non-empty strings
+   */
+  public static Predicate<String> notEmpty() {
+    return not(Strings::isNullOrEmpty);
+  }
+
+  /**
+   * Predicate that tests for non-blank strings.
+   *
+   * @return a new predicate that tests for non-blank strings
+   */
+  public static Predicate<String> notBlank() {
+    return not(Strings::isNullOrBlank);
+  }
+
+  /**
+   * Predicate that tests for non-required templates.
+   *
+   * @return a new predicate that tests for non-required templates
+   */
+  public static Predicate<Option.Template> notRequired() {
+    return not(Option.Template::isRequired);
   }
 }

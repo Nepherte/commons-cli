@@ -61,7 +61,7 @@ public class GroupTest {
   }
 
   @Test
-  public void templateArray() {
+  public void templatesArray() {
     Template t1 = mock(Template.class);
     Template t2 = mock(Template.class);
 
@@ -69,13 +69,23 @@ public class GroupTest {
     assertThat(new Group(builder).getTemplates(), containsInAnyOrder(t1, t2));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void nullTemplatesArray() {
+    Option.newGroup().templates((Template[]) null);
+  }
+
   @Test
-  public void templateIterable() {
+  public void templatesIterable() {
     Template t1 = mock(Template.class);
     Template t2 = mock(Template.class);
 
     Group.Builder builder = Option.newGroup().templates(Arrays.asList(t1, t2));
     assertThat(new Group(builder).getTemplates(), containsInAnyOrder(t1, t2));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void nullTemplatesIterable() {
+    Option.newGroup().templates((Iterable<Template>) null);
   }
 
   @Test

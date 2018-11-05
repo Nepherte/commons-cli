@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,8 +44,8 @@ public class PreconditionsTest {
     Predicate<Object> predicate = mock(Predicate.class);
     when(predicate.test(any(Object.class))).thenReturn(true);
 
-    Object arg = Preconditions.requireArg(object, predicate, "ignored");
-    assertThat(arg, is(object));
+    Object result = Preconditions.requireArg(object, predicate, "ignored");
+    assertThat(result, is(object));
     verify(predicate).test(object);
   }
 
@@ -66,14 +65,15 @@ public class PreconditionsTest {
 
   @Test
   public void requireState() {
-    Integer integer = Integer.valueOf(3);
+    Object object = new Object();
 
     //noinspection unchecked all good.
-    Function<Integer, Boolean> function = mock(Function.class);
-    when(function.apply(integer)).thenReturn(true);
+    Predicate<Object> predicate = mock(Predicate.class);
+    when(predicate.test(object)).thenReturn(true);
 
-    Preconditions.requireState(integer, function, "ignored");
-    verify(function).apply(integer);
+    Object result = Preconditions.requireState(object, predicate, "ignored");
+    assertThat(result, is(object));
+    verify(predicate).test(object);
   }
 
   @Test
@@ -81,13 +81,13 @@ public class PreconditionsTest {
     Integer integer = Integer.valueOf(3);
 
     //noinspection unchecked all good.
-    Function<Integer, Boolean> function = mock(Function.class);
-    when(function.apply(integer)).thenReturn(false);
+    Predicate<Integer> predicate = mock(Predicate.class);
+    when(predicate.test(integer)).thenReturn(false);
 
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Value is 3");
 
-    Preconditions.requireState(integer, function, "Value is %d");
-    verify(function).apply(integer);
+    Preconditions.requireState(integer, predicate, "Value is %d");
+    verify(predicate).test(integer);
   }
 }

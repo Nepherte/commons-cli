@@ -15,12 +15,18 @@
  */
 package be.nepherte.commons.cli.internal;
 
+import be.nepherte.commons.cli.Option;
+
 import org.junit.Test;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test that covers {@link Predicates}.
@@ -88,9 +94,84 @@ public class PredicatesTest {
   }
 
   @Test
-  public void nonNull() {
-    Predicate<Object> predicate = Predicates.nonNull();
+  public void notNull() {
+    Predicate<Object> predicate = Predicates.notNull();
     assertThat(predicate.test(new Object()), is(true));
     assertThat(predicate.test(null), is(false));
+  }
+
+  @Test
+  public void notNullFunction() {
+    Object nullObject = null;
+    Object object = mock(Object.class);
+
+    //noinspection unchecked these are not the droids you're looking for.
+    Function<Object,Object> function = mock(Function.class);
+    when(function.apply(anyString())).thenReturn(object, nullObject);
+
+    Predicate<Object> predicate = Predicates.notNull(function);
+    assertThat(predicate.test("ignored"), is(true));
+    assertThat(predicate.test("ignored"), is(false));
+  }
+
+  @Test
+  public void greaterThan() {
+    Predicate<Comparable<Integer>> predicate = Predicates.greaterThan(0);
+    assertThat(predicate.test(1), is(true));
+    assertThat(predicate.test(0), is(false));
+    assertThat(predicate.test(-1), is(false));
+  }
+
+  @Test
+  public void smallerThan() {
+    Predicate<Comparable<Integer>> predicate = Predicates.smallerThan(0);
+    assertThat(predicate.test(1), is(false));
+    assertThat(predicate.test(0), is(false));
+    assertThat(predicate.test(-1), is(true));
+  }
+
+  @Test
+  public void between() {
+    Predicate<Comparable<Integer>> predicate = Predicates.between(0, 9);
+    assertThat(predicate.test(-1), is(false));
+    assertThat(predicate.test(0), is(false));
+    assertThat(predicate.test(1), is(true));
+    assertThat(predicate.test(8), is(true));
+    assertThat(predicate.test(9), is(false));
+    assertThat(predicate.test(10), is(false));
+  }
+
+  @Test
+  public void noSpace() {
+    Predicate<String> predicate = Predicates.noSpace();
+    assertThat(predicate.test("a space"), is(false));
+    assertThat(predicate.test("nospace"), is(true));
+  }
+
+  @Test
+  public void notEmpty() {
+    Predicate<String> predicate = Predicates.notEmpty();
+    assertThat(predicate.test(""), is(false));
+    assertThat(predicate.test("a"), is(true));
+  }
+
+  @Test
+  public void notBlank() {
+    Predicate<String> predicate = Predicates.notBlank();
+    assertThat(predicate.test("   "), is(false));
+    assertThat(predicate.test("not blank"), is(true));
+  }
+
+  @Test
+  public void notRequired() {
+    Option.Template template1 = mock(Option.Template.class);
+    when(template1.isRequired()).thenReturn(false);
+
+    Option.Template template2 = mock(Option.Template.class);
+    when(template2.isRequired()).thenReturn(true);
+
+    Predicate<Option.Template> predicate = Predicates.notRequired();
+    assertThat(predicate.test(template1), is(true));
+    assertThat(predicate.test(template2 ), is(false));
   }
 }

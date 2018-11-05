@@ -33,39 +33,54 @@ public final class Preconditions {
   /**
    * Requires that an argument matches a given predicate.
    *
-   * @param argument the argument to inspect
-   * @param predicate the predicate evaluating the argument
-   * @param errorMessage the error message template
+   * @param argument the argument to evaluate
+   * @param predicate the predicate to evaluate
+   * @param error the error message template
    * @param <T> the type of the argument
    * @return the argument that was tested
    * @throws IllegalArgumentException the argument does not match
    */
   public static <T> T requireArg(T argument, Predicate<T> predicate,
-  String errorMessage) throws IllegalArgumentException {
+  String error) throws IllegalArgumentException {
 
-    if (!predicate.test(argument)) {
-      String formattedMessage = String.format(errorMessage, argument);
-      throw new IllegalArgumentException(formattedMessage);
-    }
-
-    return argument;
+    return require(argument, predicate, error, IllegalArgumentException::new);
   }
 
   /**
-   * Requires that an object matches a given state.
+   * Requires that an object matches a given predicate.
    *
-   * @param object the object whose state to inspect
-   * @param function the function evaluating the state
-   * @param errorMessage the error message template
+   * @param object the object to evaluate
+   * @param predicate the predicate to evaluate
+   * @param error the error message template
    * @param <T> the type of the object
-   * @throws IllegalStateException the object is in an inappropriate state
+   * @return the object that was tested
+   * @throws IllegalStateException the object does not match
    */
-  public static <T> void requireState(T object, Function<T, Boolean> function,
-  String errorMessage) throws IllegalStateException {
+  public static <T> T requireState(T object, Predicate<T> predicate,
+  String error) throws IllegalStateException {
 
-    if (Boolean.FALSE.equals(function.apply(object))) {
-      String formattedMessage = String.format(errorMessage, object);
-      throw new IllegalStateException(formattedMessage);
+    return require(object, predicate, error, IllegalStateException::new);
+  }
+
+  /**
+   * Requires that an input matches a given predicate.
+   *
+   * @param input the input to evaluate
+   * @param predicate the predicate to evaluate
+   * @param error the error message template
+   * @param exception the exception to throw
+   * @param <T> the type of the object
+   * @return the input that was tested
+   * @throws RuntimeException the input doesn't match the predicate
+   */
+  private static <T> T require(T input, Predicate<T> predicate,
+  String error, Function<String, RuntimeException> exception) {
+
+    if (!predicate.test(input)) {
+      String errorMessage = String.format(error, input);
+      throw exception.apply(errorMessage);
     }
+
+    return input;
   }
 }

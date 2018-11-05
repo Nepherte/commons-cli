@@ -24,10 +24,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
 
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toSet;
+import static be.nepherte.commons.cli.internal.Preconditions.*;
+import static be.nepherte.commons.cli.internal.Predicates.*;
+
+import static java.lang.String.format;
+import static java.util.Arrays.*;
+import static java.util.stream.Collectors.*;
 
 /**
  * <p>An <em>immutable</em> representation of a command, its {@link Option
@@ -77,6 +81,7 @@ public final class Command {
    * can be re-used several times.
    *
    * @param builder the settings of the new command
+   * @throws NullPointerException the builder is null
    */
   Command(Builder builder) {
     name = builder.name;
@@ -112,11 +117,7 @@ public final class Command {
    * @throws IllegalArgumentException index is out of range
    */
   public String getArgument(int i) {
-    if (i < 0 || i >= argumentCount()) {
-      throw new IllegalArgumentException(
-        "Command has no argument at index [" + i + "]"
-      );
-    }
+    requireArg(i, between(-1, argumentCount()), "No argument at index [%d]");
     return arguments.get(i);
   }
 
@@ -155,14 +156,11 @@ public final class Command {
   public List<String> getOptionValues(String name) {
     Option option = resolveOption(name, options);
 
-    if (option == null) {
-      throw new IllegalArgumentException(
-        "Command has no option with name [" + name + "]"
-      );
-    }
+    // One should really check for the presence of the option first.
+    requireArg(option, notNull(), "Command has no option with name [%s]");
 
-    // Option values are already immutable.
-    return option.getValues();
+    //noinspection ConstantConditions requireArg checks for null.
+    return option.getValues(); // Option values are immutable.
   }
 
   /**
@@ -187,12 +185,14 @@ public final class Command {
    * @return the option with such name, or {@code null}
    */
   private static Option resolveOption(String name, Iterable<Option> options) {
+    // Bounce back null and blank names.
     if (Strings.isNullOrBlank(name)) {
       return null;
     }
 
     // Support querying an option name with leading hyphens.
-    String stripped = Option.NAME_PREFIX_PATTERN.matcher(name).replaceFirst("");
+    Matcher matcher = Option.NAME_PREFIX_PATTERN.matcher(name);
+    String stripped = matcher.replaceFirst("");
 
     // The last provided option prevails.
     for (Option option: options) {
@@ -216,24 +216,21 @@ public final class Command {
    * </ol>
    *
    * @param name the string to parse
-   * @return the parsed command name, or {@code null} if blank
-   * @throws IllegalArgumentException name contains spaces
+   * @return the parsed command name
+   * @throws IllegalArgumentException the name is null or empty
+   * @throws IllegalArgumentException the name has a space
    */
   private static String parseCommandName(String name) {
-    // Bounce back null names.
-    if (name == null) {
-      return null;
-    }
+    // Null names are not allowed.
+    requireArg(name, notNull(), "The name is [%s]");
 
-    // Command names never contain spaces.
-    if (Strings.containsWhitespace(name)) {
-      throw new IllegalArgumentException(
-        "Command name [" + name + "] contains whitespace"
-      );
-    }
+    // Names cannot contain space(s).
+    requireArg(name, noSpace(), "The name [%s] has a space");
 
     // Convert empty names to null.
-    return Strings.emptyToNull(name);
+    requireArg(name, notEmpty(), "The name [%s] is empty");
+
+    return name;
   }
 
   /**
@@ -267,6 +264,7 @@ public final class Command {
      * Creates a new builder, initialized with a command's values.
      *
      * @param command the settings of the new builder
+     * @throws NullPointerException the command is null
      */
     Builder(Command command) {
       name = command.name;
@@ -276,11 +274,11 @@ public final class Command {
 
     /**
      * Sets the name of the new command.
-     * reset.
      *
      * @param name the name of the new command
      * @return this builder
-     * @throws IllegalArgumentException the name contains a space
+     * @throws IllegalArgumentException the name is null or empty
+     * @throws IllegalArgumentException the name has a space
      */
     public Builder name(String name) {
       this.name = parseCommandName(name);
@@ -289,62 +287,63 @@ public final class Command {
 
     /**
      * Adds an option to the new command. Replaces options that share the same
-     * name. {@code Null} options are ignored.
+     * name.
      *
      * @param option the option to add
      * @return this builder
+     * @throws IllegalArgumentException the option is null
      */
     public Builder option(Option option) {
-      if (option != null) {
-        String optionName = option.getName();
-        Option resolved = resolveOption(optionName, options);
+      requireArg(option, notNull(), "The option is [%s]");
 
-        if (resolved != null) {
-          options.remove(resolved);
-        }
-        options.add(option);
+      String optionName = option.getName();
+      Option resolved = resolveOption(optionName, options);
+
+      if (resolved != null) {
+        options.remove(resolved);
       }
+      options.add(option);
       return this;
     }
 
     /**
      * Adds options to the new command. Replaces options that share the same
-     * name. {@code Null} options are ignored.
+     * name.
      *
      * @param options the options to add
      * @return this builder
+     * @throws IllegalArgumentException the iterable or an option is null
      */
     public Builder options(Iterable<Option> options) {
-      if (options != null) {
-        options.forEach(this::option);
-      }
+      requireArg(options, notNull(), "The option iterable is [%s]");
+      options.forEach(this::option);
       return this;
     }
 
     /**
      * Adds options to the new command. Replaces options that share the same
-     * name. {@code Null} options are ignored.
+     * name.
      *
      * @param options the options to add
      * @return this builder
+     * @throws IllegalArgumentException the array or an option is null
      */
     public Builder options(Option... options) {
-      if (options != null) {
-        stream(options).forEach(this::option);
-      }
+      requireArg(options, notNull(), "The option array is [%s]");
+      stream(options).forEach(this::option);
       return this;
     }
 
     /**
-     * Adds an argument to the new command. {@code Null} arguments are ignored.
+     * Adds an argument to the new command.
      *
      * @param argument the argument to add
      * @return this builder
+     * @throws IllegalArgumentException the argument is null
      */
     public Builder argument(String argument) {
-      if (!Strings.isNullOrBlank(argument)) {
-        arguments.add(argument);
-      }
+      requireArg(argument, notNull(), "The argument is [%s]");
+      arguments.add(argument);
       return this;
     }
 
@@ -353,11 +352,11 @@ public final class Command {
      *
      * @param arguments the arguments to add
      * @return this builder
+     * @throws IllegalArgumentException the iterable or an argument is null
      */
     public Builder arguments(Iterable<String> arguments) {
-      if (arguments != null) {
-        arguments.forEach(this::argument);
-      }
+      requireArg(arguments, notNull(), "The argument iterable is [%s]");
+      arguments.forEach(this::argument);
       return this;
     }
 
@@ -366,11 +365,11 @@ public final class Command {
      *
      * @param arguments the arguments to add
      * @return this builder
+     * @throws IllegalArgumentException the array or an argument is null
      */
     public Builder arguments(String... arguments) {
-      if (arguments != null) {
-        stream(arguments).forEach(this::argument);
-      }
+      requireArg(arguments, notNull(), "The argument array is [%s]");
+      stream(arguments).forEach(this::argument);
       return this;
     }
 
@@ -434,6 +433,7 @@ public final class Command {
      * builder can be re-used several times.
      *
      * @param builder the settings of the new descriptor
+     * @throws NullPointerException the builder is null
      */
     Descriptor(Builder builder) {
       name = builder.name;
@@ -612,6 +612,7 @@ public final class Command {
        * Creates a new builder, initialized with the values set on a descriptor.
        *
        * @param descriptor the settings of this builder
+       * @throws NullPointerException descriptor is null
        */
       Builder(Descriptor descriptor) {
         name = descriptor.name;
@@ -626,6 +627,8 @@ public final class Command {
        *
        * @param name the name of the new descriptor
        * @return this builder
+       * @throws IllegalArgumentException the name is null or empty
+       * @throws IllegalArgumentException the name has a space
        */
       public Builder name(String name) {
         this.name = parseCommandName(name);
@@ -637,11 +640,11 @@ public final class Command {
        *
        * @param template the template to add
        * @return this builder
+       * @throws IllegalArgumentException the template is null
        */
       public Builder template(Option.Template template) {
-        if (template != null) {
-          templates.add(template);
-        }
+        requireArg(template, notNull(), "The template is [%s]");
+        templates.add(template);
         return this;
       }
 
@@ -650,11 +653,11 @@ public final class Command {
        *
        * @param templates the templates to add
        * @return this builder
+       * @throws IllegalArgumentException the iterable or a template is null
        */
       public Builder templates(Iterable<Option.Template> templates) {
-        if (templates != null) {
-          templates.forEach(this::template);
-        }
+        requireArg(templates, notNull(), "The template iterable is [%s]");
+        templates.forEach(this::template);
         return this;
       }
 
@@ -663,11 +666,11 @@ public final class Command {
        *
        * @param templates the templates to add
        * @return this builder
+       * @throws IllegalArgumentException the array or a template is null
        */
       public Builder templates(Option.Template... templates) {
-        if (templates != null) {
-          stream(templates).forEach(this::template);
-        }
+        requireArg(templates, notNull(), "The template array is [%s]");
+        stream(templates).forEach(this::template);
         return this;
       }
 
@@ -676,12 +679,12 @@ public final class Command {
        *
        * @param group the group to add
        * @return this builder
+       * @throws IllegalArgumentException the group is null
        */
       public Builder group(Option.Group group) {
-        if (group != null) {
-          groups.add(group);
-          templates(group.getTemplates());
-        }
+        requireArg(group, notNull(), "The group is [%s]");
+        groups.add(group);
+        templates(group.getTemplates());
         return this;
       }
 
@@ -690,11 +693,11 @@ public final class Command {
        *
        * @param groups the groups to add
        * @return this builder
+       * @throws IllegalArgumentException the iterable or a group is null
        */
       public Builder groups(Iterable<Option.Group> groups) {
-        if (groups != null) {
-          groups.forEach(this::group);
-        }
+        requireArg(groups, notNull(), "The group iterable is [%s]");
+        groups.forEach(this::group);
         return this;
       }
 
@@ -703,11 +706,11 @@ public final class Command {
        *
        * @param groups the groups to add
        * @return this builder
+       * @throws IllegalArgumentException the array or a group is null
        */
       public Builder groups(Option.Group... groups) {
-        if (groups != null) {
-          stream(groups).forEach(this::group);
-        }
+        requireArg(groups, notNull(), "The group array is [%s]");
+        stream(groups).forEach(this::group);
         return this;
       }
 
@@ -719,11 +722,7 @@ public final class Command {
        * @throws IllegalArgumentException the number of arguments is negative
        */
       public Builder minArgs(int minArgs) {
-        if (minArgs < 0) {
-          throw new IllegalArgumentException(
-            "Minimum number of arguments is negative [" + minArgs + "]"
-          );
-        }
+        requireArg(minArgs, greaterThan(-1), "Min args [%d] is negative");
         this.minArgs = minArgs;
         return this;
       }
@@ -736,11 +735,7 @@ public final class Command {
        * @throws IllegalArgumentException the number of arguments is negative
        */
       public Builder maxArgs(int maxArgs) {
-        if (maxArgs < 0) {
-          throw new IllegalArgumentException(
-            "Maximum number of arguments is negative [" + maxArgs + "]"
-          );
-        }
+        requireArg(maxArgs, greaterThan(-1), "Max args [%d] is negative");
         this.maxArgs = maxArgs;
         return this;
       }
@@ -754,13 +749,9 @@ public final class Command {
        * @throws IllegalStateException the descriptor is invalid
        */
       public Descriptor build() {
-        if (maxArgs < minArgs) {
-          throw new IllegalStateException(
-            "Descriptor requires more arguments than allowed" +
-              "[" + maxArgs + " < " + minArgs + "]"
-          );
-        }
-
+        requireState(minArgs, not(greaterThan(maxArgs)), format(
+          "Min args [%%d] greater than max args [%d]", maxArgs)
+        );
         return new Descriptor(this);
       }
 
