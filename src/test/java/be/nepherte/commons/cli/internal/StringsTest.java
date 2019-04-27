@@ -15,19 +15,19 @@
  */
 package be.nepherte.commons.cli.internal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test that covers {@link Strings}.
  */
-public final class StringsTest {
+final class StringsTest {
 
   @Test
-  public void isNullOrEmpty() {
+  void isNullOrEmpty() {
     assertThat(Strings.isNullOrEmpty(null), is(true));
     assertThat(Strings.isNullOrEmpty(""), is(true));
     assertThat(Strings.isNullOrEmpty(" "), is(false));
@@ -36,7 +36,7 @@ public final class StringsTest {
   }
 
   @Test
-  public void nullToEmpty() {
+  void nullToEmpty() {
     assertThat(Strings.nullToEmpty(null), is(""));
     assertThat(Strings.nullToEmpty(""), is(""));
     assertThat(Strings.nullToEmpty(" "), is(" "));
@@ -45,7 +45,7 @@ public final class StringsTest {
   }
 
   @Test
-  public void emptyToNull() {
+  void emptyToNull() {
     assertThat(Strings.emptyToNull(null), nullValue());
     assertThat(Strings.emptyToNull(""), nullValue());
     assertThat(Strings.emptyToNull(" "), is(" "));
@@ -54,7 +54,7 @@ public final class StringsTest {
   }
 
   @Test
-  public void isNullOrBlank() {
+  void isNullOrBlank() {
     assertThat(Strings.isNullOrBlank(null), is(true));
     assertThat(Strings.isNullOrBlank(""), is(true));
     assertThat(Strings.isNullOrBlank("  "), is(true));
@@ -63,7 +63,7 @@ public final class StringsTest {
   }
 
   @Test
-  public void blankToNull() {
+  void blankToNull() {
     assertThat(Strings.blankToNull(null), nullValue());
     assertThat(Strings.blankToNull(""), nullValue());
     assertThat(Strings.blankToNull("  "), nullValue());
@@ -72,15 +72,16 @@ public final class StringsTest {
   }
 
   @Test
-  public void containsWhitespace() {
+  void containsWhitespace() {
     assertThat(Strings.containsWhitespace("  "), is(true));
     assertThat(Strings.containsWhitespace("\t"), is(true));
     assertThat(Strings.containsWhitespace("a\ta"), is(true));
     assertThat(Strings.containsWhitespace("aa"), is(false));
   }
 
-  @Test(expected = NullPointerException.class)
-  public void containsWhitespaceNull() {
-    Strings.containsWhitespace(null);
+  @Test
+  void containsWhitespaceNull() {
+    assertThrows(NullPointerException.class,
+      () -> Strings.containsWhitespace(null));
   }
 }

@@ -15,7 +15,7 @@
  */
 package be.nepherte.commons.cli.internal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,83 +23,92 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.collection.IsIterableContainingInOrder.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test that covers {@link Collections}.
  */
-public class CollectionsTest {
+class CollectionsTest {
 
   @Test
-  public void identicalList() {
+  void identicalList() {
     Collection<String> mutable = Arrays.asList("a", "b", "c");
     List<String> immutable = Collections.immutableList(mutable);
     assertThat(immutable, contains("a", "b", "c"));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void immutableList() {
+  @Test
+  void immutableList() {
     List<String> mutable = Arrays.asList("a", "b", "c");
-    Collections.immutableList(mutable).set(0, "d");
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void immutableListNull() {
-    Collections.immutableList(null);
+    assertThrows(UnsupportedOperationException.class,
+      () -> Collections.immutableList(mutable).set(0, "d"));
   }
 
   @Test
-  public void identicalListOf() {
-    String[] elements = {"a", "b", "c"};
+  void immutableListNull() {
+    assertThrows(NullPointerException.class,
+      () -> Collections.immutableList(null));
+  }
+
+  @Test
+  void identicalListOf() {
+    String[] elements = {"a", "b", "c", "d", "e"};
     List<String> immutable = Collections.immutableListOf(elements);
-    assertThat(immutable, contains("a", "b", "c"));
-  }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void immutableListOf() {
-    String[] elements = {"a", "b", "c"};
-    Collections.immutableListOf(elements).set(0, "d");
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void immutableListOfNull() {
-    Collections.immutableListOf((Object[]) null);
+    assertThat(immutable, contains("a", "b", "c", "d", "e"));
   }
 
   @Test
-  public void identicalSet() {
+  void immutableListOf() {
+    String[] elements = {"a", "b", "c", "d", "e"};
+    assertThrows(UnsupportedOperationException.class,
+      () -> Collections.immutableListOf(elements).set(0, "d"));
+  }
+
+  @Test
+  void immutableListOfNull() {
+    assertThrows(NullPointerException.class,
+      () -> Collections.immutableListOf((Object[]) null));
+  }
+
+  @Test
+  void identicalSet() {
     Collection<String> mutable = new HashSet<>(Arrays.asList("a", "b", "c"));
     Set<String> immutable = Collections.immutableSet(mutable);
     assertThat(immutable, contains("a", "b", "c"));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void immutableSet() {
+  @Test
+  void immutableSet() {
     Collection<String> mutable = new HashSet<>(Arrays.asList("a", "b", "c"));
-    Collections.immutableSet(mutable).add("d");
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void immutableSetNull() {
-    Collections.immutableSet(null);
+    assertThrows(UnsupportedOperationException.class,
+      () -> Collections.immutableSet(mutable).add("d"));
   }
 
   @Test
-  public void identicalSetOf() {
+  void immutableSetNull() {
+    assertThrows(NullPointerException.class,
+      () -> Collections.immutableSet(null));
+  }
+
+  @Test
+  void identicalSetOf() {
     String[] elements = {"a", "b", "c"};
     Set<String> immutable = Collections.immutableSetOf(elements);
     assertThat(immutable, contains("a", "b", "c"));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void immutableSetOf() {
+  @Test
+  void immutableSetOf() {
     String[] elements = {"a", "b", "c"};
-    Collections.immutableSetOf(elements).add("d");
+    assertThrows(UnsupportedOperationException.class,
+      () -> Collections.immutableSetOf(elements).add("d"));
   }
 
-  @Test(expected = NullPointerException.class)
-  public void immutableSetOfNull() {
-    Collections.immutableSetOf((Object[]) null);
+  @Test
+  void immutableSetOfNull() {
+    assertThrows(NullPointerException.class,
+      () -> Collections.immutableSetOf((Object[]) null));
   }
 }

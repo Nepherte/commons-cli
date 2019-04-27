@@ -18,50 +18,51 @@ package be.nepherte.commons.cli;
 import be.nepherte.commons.cli.Option.Group;
 import be.nepherte.commons.cli.Option.Template;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
 
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Test that covers {@link Option.Group}.
  */
-public class GroupTest {
+class GroupTest {
 
   @Test
-  public void requiredGroup() {
+  void requiredGroup() {
     Group.Builder builder = Option.newGroup().required();
     assertThat(new Group(builder).isRequired(), is(true));
   }
 
   @Test
-  public void optionalGroup() {
+  void optionalGroup() {
     Group.Builder builder = Option.newGroup();
     assertThat(new Group(builder).isRequired(), is(false));
   }
 
   @Test
-  public void template() {
+  void template() {
     Template template = mock(Template.class);
     Group.Builder builder = Option.newGroup().template(template);
     assertThat(new Group(builder).getTemplates(), containsInAnyOrder(template));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void requiredTemplate() {
+  @Test
+  void requiredTemplate() {
     Template template = mock(Template.class);
     when(template.isRequired()).thenReturn(true);
-    Option.newGroup().template(template);
+
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newGroup().template(template));
   }
 
   @Test
-  public void templatesArray() {
+  void templatesArray() {
     Template t1 = mock(Template.class);
     Template t2 = mock(Template.class);
 
@@ -69,13 +70,14 @@ public class GroupTest {
     assertThat(new Group(builder).getTemplates(), containsInAnyOrder(t1, t2));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullTemplatesArray() {
-    Option.newGroup().templates((Template[]) null);
+  @Test
+  void nullTemplatesArray() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newGroup().templates((Template[]) null));
   }
 
   @Test
-  public void templatesIterable() {
+  void templatesIterable() {
     Template t1 = mock(Template.class);
     Template t2 = mock(Template.class);
 
@@ -83,13 +85,14 @@ public class GroupTest {
     assertThat(new Group(builder).getTemplates(), containsInAnyOrder(t1, t2));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullTemplatesIterable() {
-    Option.newGroup().templates((Iterable<Template>) null);
+  @Test
+  void nullTemplatesIterable() {
+    assertThrows(IllegalArgumentException.class, () ->
+      Option.newGroup().templates((Iterable<Template>) null));
   }
 
   @Test
-  public void stringValue() {
+  void stringValue() {
     // Empty optional group.
     Group.Builder builder = Option.newGroup();
     assertThat(builder.toString(), is("[]"));
