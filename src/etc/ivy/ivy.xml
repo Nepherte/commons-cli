@@ -19,19 +19,19 @@
   </configurations>
 
   <publications defaultconf="release">
-    <artifact name="commons-cli" ext="jar" type="jar" conf="release"/>
-    <artifact name="commons-cli" ext="jar" type="source" conf="release" e:classifier="sources"/>
-    <artifact name="commons-cli" ext="jar" type="javadoc" conf="release" e:classifier="javadoc"/>
+    <artifact name="commons-cli" ext="jar" type="jar"/>
+    <artifact name="commons-cli" ext="jar" type="source" e:classifier="sources"/>
+    <artifact name="commons-cli" ext="jar" type="javadoc" e:classifier="javadoc"/>
   </publications>
 
-  <dependencies defaultconf="default" defaultconfmapping="*->default">
+  <dependencies defaultconf="testing" defaultconfmapping="testing->default">
     <!-- Default dependencies -->
 
     <!-- Testing dependencies -->
-    <dependency org="org.junit" name="junit" rev="4.12" conf="testing"/>
-    <dependency org="org.mockito" name="mockito-core" rev="2.23.0" conf="testing"/>
-    <dependency org="org.mockito" name="mockito-inline" rev="2.23.0" conf="testing"/>
-    <dependency org="org.hamcrest" name="hamcrest-core" rev="1.3" conf="testing"/>
-    <dependency org="org.hamcrest" name="hamcrest-library" rev="1.3" conf="testing"/>
+    <dependency org="org.junit.jupiter" name="junit-jupiter" rev="5.4.0"/>
+    <dependency org="org.hamcrest" name="hamcrest" rev="2.1"/>
+
+    <dependency org="org.mockito" name="mockito-core" rev="2.25.0"/>
+    <dependency org="org.mockito" name="mockito-inline" rev="2.25.0"/>
   </dependencies>
 </ivy-module>

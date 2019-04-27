@@ -31,19 +31,20 @@ import be.nepherte.commons.cli.internal.Exceptions.TooManyArgumentsException;
 import be.nepherte.commons.cli.internal.Exceptions.TooManyValuesException;
 import be.nepherte.commons.cli.internal.Exceptions.UnrecognizedTokenException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.collection.IsIterableContainingInOrder.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test that covers the option format of a Gnu parser.
  */
-public class GnuParserTest {
+class GnuParserTest {
 
   @Test
-  public void shortOption() throws ParseException {
+  void shortOption() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -56,7 +57,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void longOption() throws ParseException {
+  void longOption() throws ParseException {
     Template a = Option.newTemplate().longName("enable-a").build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -69,7 +70,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void requiredOption() throws ParseException {
+  void requiredOption() throws ParseException {
     Template a = Option.newTemplate().shortName("a").required().build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -81,41 +82,44 @@ public class GnuParserTest {
     assertThat(cmd.hasOption("a"), is(true));
   }
 
-  @Test(expected = MissingOptionException.class)
-  public void missingOption() throws ParseException {
+  @Test
+  void missingOption() throws ParseException {
     Template a = Option.newTemplate().shortName("a").required().build();
 
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.template(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[0]);
+    assertThrows(MissingOptionException.class,
+      () -> parser.parse(new String[0]));
   }
 
-  @Test(expected = UnrecognizedTokenException.class)
-  public void unrecognizedOption() throws ParseException {
-    Template a = Option.newTemplate().shortName("a").build();
-
-    Descriptor.Builder builder = Command.newDescriptor();
-    Descriptor descriptor = builder.templates(a).build();
-    GnuParser parser = new GnuParser(descriptor);
-
-    parser.parse(new String[]{"-b"});
-  }
-
-  @Test(expected = UnrecognizedTokenException.class)
-  public void unrecognizedOptionWithValues() throws ParseException {
+  @Test
+  void unrecognizedOption() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
 
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.templates(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-unknown=value"});
+    assertThrows(UnrecognizedTokenException.class,
+      () -> parser.parse(new String[]{"-b"}));
   }
 
-  @Test(expected = MissingValueException.class)
-  public void optionWithMissingValue() throws ParseException {
+  @Test
+  void unrecognizedOptionWithValues() throws ParseException {
+    Template a = Option.newTemplate().shortName("a").build();
+
+    Descriptor.Builder builder = Command.newDescriptor();
+    Descriptor descriptor = builder.templates(a).build();
+
+    GnuParser parser = new GnuParser(descriptor);
+    assertThrows(UnrecognizedTokenException.class,
+      () -> parser.parse(new String[]{"-unknown=value"}));
+  }
+
+  @Test
+  void optionWithMissingValue() throws ParseException {
     Template a = Option.newTemplate().shortName("a")
       .minValues(1).maxValues(1).build();
 
@@ -123,55 +127,60 @@ public class GnuParserTest {
     Descriptor descriptor = builder.templates(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-a"});
+    assertThrows(MissingValueException.class,
+      () -> parser.parse(new String[]{"-a"}));
   }
 
-  @Test(expected = UnrecognizedTokenException.class)
-  public void optionWithTooManyDashes() throws ParseException {
+  @Test
+  void optionWithTooManyDashes() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
 
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.templates(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"--a"});
+    assertThrows(UnrecognizedTokenException.class,
+      () -> parser.parse(new String[]{"--a"}));
   }
 
-  @Test(expected = TooManyValuesException.class)
-  public void optionWithUnexpectedValues() throws ParseException {
+  @Test
+  void optionWithUnexpectedValues() throws ParseException {
     Template a = Option.newTemplate().shortName("a").maxValues(0).build();
 
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.templates(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-a=1"});
-  }
-
-  @Test(expected = TooManyValuesException.class)
-  public void optionWithTooManyValues() throws ParseException {
-    Template a = Option.newTemplate().shortName("a").maxValues(1).build();
-
-    Descriptor.Builder builder = Command.newDescriptor();
-    Descriptor descriptor = builder.templates(a).build();
-
-    GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-a=1,2"});
-  }
-
-  @Test(expected = UnrecognizedTokenException.class)
-  public void optionWithTooManyValueSeparators() throws ParseException {
-    Template a = Option.newTemplate().shortName("a").maxValues(1).build();
-
-    Descriptor.Builder builder = Command.newDescriptor();
-    Descriptor descriptor = builder.templates(a).build();
-
-    GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-a=foo=bar"});
+    assertThrows(TooManyValuesException.class,
+      () -> parser.parse(new String[]{"-a=1"}));
   }
 
   @Test
-  public void optionWithValue() throws ParseException {
+  void optionWithTooManyValues() throws ParseException {
+    Template a = Option.newTemplate().shortName("a").maxValues(1).build();
+
+    Descriptor.Builder builder = Command.newDescriptor();
+    Descriptor descriptor = builder.templates(a).build();
+
+    GnuParser parser = new GnuParser(descriptor);
+    assertThrows(TooManyValuesException.class,
+      () -> parser.parse(new String[]{"-a=1,2"}));
+  }
+
+  @Test
+  void optionWithTooManyValueSeparators() throws ParseException {
+    Template a = Option.newTemplate().shortName("a").maxValues(1).build();
+
+    Descriptor.Builder builder = Command.newDescriptor();
+    Descriptor descriptor = builder.templates(a).build();
+
+    GnuParser parser = new GnuParser(descriptor);
+    assertThrows(UnrecognizedTokenException.class,
+      () -> parser.parse(new String[]{"-a=foo=bar"}));
+  }
+
+  @Test
+  void optionWithValue() throws ParseException {
     Template a = Option.newTemplate().shortName("a").maxValues(1).build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -186,7 +195,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void optionWithValues() throws ParseException {
+  void optionWithValues() throws ParseException {
     Template a = Option.newTemplate().shortName("a").maxValues(2).build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -199,7 +208,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void optionValueWithHyphen() throws ParseException {
+  void optionValueWithHyphen() throws ParseException {
     Template a = Option.newTemplate().shortName("a").maxValues(1).build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -213,7 +222,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void optionValueIsAlsoAnOption() throws ParseException {
+  void optionValueIsAlsoAnOption() throws ParseException {
     Template a = Option.newTemplate().shortName("a").maxValues(1).build();
     Template b = Option.newTemplate().shortName("b").build();
 
@@ -228,7 +237,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void optionValueIsDoubleDash() throws ParseException {
+  void optionValueIsDoubleDash() throws ParseException {
     Template a = Option.newTemplate().shortName("a").maxValues(1).build();
 
     Descriptor.Builder builder = Command.newDescriptor();
@@ -241,7 +250,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void options() throws ParseException {
+  void options() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
     Template b = Option.newTemplate().longName("b").build();
 
@@ -255,8 +264,8 @@ public class GnuParserTest {
     assertThat(cmd.hasOption("b"), is(true));
   }
 
-  @Test(expected = ExclusiveOptionsException.class)
-  public void exclusiveOptions() throws ParseException {
+  @Test
+  void exclusiveOptions() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
     Template b = Option.newTemplate().shortName("b").build();
 
@@ -267,11 +276,12 @@ public class GnuParserTest {
     Descriptor descriptor = builder.groups(g).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-a", "-b"});
+    assertThrows(ExclusiveOptionsException.class,
+      () -> parser.parse(new String[]{"-a", "-b"}));
   }
 
   @Test
-  public void group() throws ParseException {
+  void group() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
     Group group = Option.newGroup().template(a).build();
 
@@ -285,7 +295,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void requiredGroup() throws ParseException {
+  void requiredGroup() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
     Group g = Option.newGroup().required().template(a).build();
 
@@ -298,8 +308,8 @@ public class GnuParserTest {
     assertThat(cmd.hasOption("a"), is(true));
   }
 
-  @Test(expected = MissingGroupException.class)
-  public void missingGroup() throws ParseException {
+  @Test
+  void missingGroup() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
     Group g = Option.newGroup().required().template(a).build();
 
@@ -307,11 +317,12 @@ public class GnuParserTest {
     Descriptor descriptor = builder.groups(g).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[0]);
+    assertThrows(MissingGroupException.class,
+      () -> parser.parse(new String[0]));
   }
 
   @Test
-  public void argument() throws ParseException {
+  void argument() throws ParseException {
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.maxArgs(1).build();
 
@@ -322,17 +333,18 @@ public class GnuParserTest {
     assertThat(cmd.argumentCount(), is(1));
   }
 
-  @Test(expected = MissingArgumentException.class)
-  public void missingArgument() throws ParseException {
+  @Test
+  void missingArgument() throws ParseException {
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.minArgs(3).maxArgs(3).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"1", "2"});
+    assertThrows(MissingArgumentException.class,
+      () -> parser.parse(new String[]{"1", "2"}));
   }
 
   @Test
-  public void firstArgumentHasDash() throws ParseException {
+  void firstArgumentHasDash() throws ParseException {
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.maxArgs(1).build();
 
@@ -344,7 +356,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void arguments() throws ParseException {
+  void arguments() throws ParseException {
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.maxArgs(2).build();
 
@@ -356,28 +368,30 @@ public class GnuParserTest {
     assertThat(cmd.argumentCount(), is(2));
   }
 
-  @Test(expected = TooManyArgumentsException.class)
-  public void tooManyArguments() throws ParseException {
+  @Test
+  void tooManyArguments() throws ParseException {
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.maxArgs(1).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"foo", "bar"});
+    assertThrows(TooManyArgumentsException.class,
+      () -> parser.parse(new String[]{"foo", "bar"}));
   }
 
-  @Test(expected = UnrecognizedTokenException.class)
-  public void singleDash() throws ParseException {
+  @Test
+  void singleDash() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
 
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.templates(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"-"});
+    assertThrows(UnrecognizedTokenException.class,
+      () -> parser.parse(new String[]{"-"}));
   }
 
   @Test
-  public void doubleDash() throws ParseException {
+  void doubleDash() throws ParseException {
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.maxArgs(1).build();
 
@@ -389,7 +403,7 @@ public class GnuParserTest {
   }
 
   @Test
-  public void doubleDashSeparator() throws ParseException {
+  void doubleDashSeparator() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
     Template b = Option.newTemplate().shortName("b").build();
 
@@ -406,14 +420,15 @@ public class GnuParserTest {
     assertThat(cmd.getArgument(1), is("foo"));
   }
 
-  @Test(expected = UnrecognizedTokenException.class)
-  public void tripleDash() throws ParseException {
+  @Test
+  void tripleDash() throws ParseException {
     Template a = Option.newTemplate().shortName("a").build();
 
     Descriptor.Builder builder = Command.newDescriptor();
     Descriptor descriptor = builder.templates(a).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    parser.parse(new String[]{"---"});
+    assertThrows(UnrecognizedTokenException.class,
+      () -> parser.parse(new String[]{"---"}));
   }
 }

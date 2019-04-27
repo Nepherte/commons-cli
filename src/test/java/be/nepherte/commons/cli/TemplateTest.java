@@ -16,78 +16,83 @@
 package be.nepherte.commons.cli;
 
 import be.nepherte.commons.cli.Option.Template;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.number.OrderingComparison.*;
 
-import static be.nepherte.commons.test.Matchers.optionalWithValue;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.hamcrest.number.OrderingComparison.lessThan;
-
-import static org.junit.Assert.assertThat;
+import static be.nepherte.commons.test.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A test that covers {@link Template Template} and {@link Template.Builder
  * Template.Builder}.
  */
-public class TemplateTest {
+class TemplateTest {
 
   @Test
-  public void shortName() {
+  void shortName() {
     Template.Builder builder = Option.newTemplate().shortName("-b");
     assertThat(new Template(builder).getShortName(), optionalWithValue("b"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullShortName() {
-    Option.newTemplate().shortName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void emptyShortName() {
-    Option.newTemplate().shortName("");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void shortNameWithSpace() {
-    Option.newTemplate().shortName("short\tname");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void dashOnlyShortName() {
-    Option.newTemplate().shortName("--");
+  @Test
+  void nullShortName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().shortName(null));
   }
 
   @Test
-  public void longName() {
+  void emptyShortName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().shortName(""));
+  }
+
+  @Test
+  void shortNameWithSpace() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().shortName("short\tname"));
+  }
+
+  @Test
+  void dashOnlyShortName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().shortName("--"));
+  }
+
+  @Test
+  void longName() {
     Template.Builder builder = Option.newTemplate().longName("--block");
     assertThat(new Template(builder).getLongName(), optionalWithValue("block"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullLongName() {
-    Option.newTemplate().longName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void emptyLongName() {
-    Option.newTemplate().longName("");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void longNameWithSpace() {
-    Option.newTemplate().longName("long\tname");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void dashOnlyLongName() {
-    Option.newTemplate().longName("--");
+  @Test
+  void nullLongName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().longName(null));
   }
 
   @Test
-  public void name() {
+  void emptyLongName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().longName(""));
+  }
+
+  @Test
+  void longNameWithSpace() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().longName("long\tname"));
+  }
+
+  @Test
+  void dashOnlyLongName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().longName("--"));
+  }
+
+  @Test
+  void name() {
     // Only short name available.
     Template.Builder builder = Option.newTemplate().shortName("-b");
     assertThat(new Template(builder).getName(), is("b"));
@@ -102,7 +107,7 @@ public class TemplateTest {
   }
 
   @Test
-  public void sortByName() {
+  void sortByName() {
     Template t1 = Option.newTemplate().shortName("a").build();
     Template t2 = Option.newTemplate().longName("b").build();
     Template t3 = Option.newTemplate().shortName("c").build();
@@ -121,57 +126,61 @@ public class TemplateTest {
   }
 
   @Test
-  public void description() {
+  void description() {
     Template.Builder builder = Option.newTemplate().description("ab");
     assertThat(new Template(builder).getDescription(), optionalWithValue("ab"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullDescription() {
-    Option.newTemplate().description(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void blankDescription() {
-    Option.newTemplate().description("  ");
+  @Test
+  void nullDescription() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().description(null));
   }
 
   @Test
-  public void optional() {
+  void blankDescription() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().description("  "));
+  }
+
+  @Test
+  void optional() {
     Template.Builder builder = Option.newTemplate();
     assertThat(new Template(builder).isRequired(), is(false));
   }
 
   @Test
-  public void required() {
+  void required() {
     Template.Builder builder = Option.newTemplate().required();
     assertThat(new Template(builder).isRequired(), is(true));
   }
 
   @Test
-  public void minValues() {
+  void minValues() {
     Template.Builder builder = Option.newTemplate().minValues(8);
     assertThat(new Template(builder).getMinValues(), is(8));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void negativeMinValues() {
-    Option.newTemplate().minValues(-1);
+  @Test
+  void negativeMinValues() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().minValues(-1));
   }
 
   @Test
-  public void maxValues() {
+  void maxValues() {
     Template.Builder builder = Option.newTemplate().maxValues(1);
     assertThat(new Template(builder).getMaxValues(), is(1));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void negativeMaxValues() {
-    Option.newTemplate().maxValues(-1);
+  @Test
+  void negativeMaxValues() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().maxValues(-1));
   }
 
   @Test
-  public void requiresValues() {
+  void requiresValues() {
     Template.Builder builder = Option.newTemplate().minValues(1);
     assertThat(new Template(builder).requiresValues(), is(true));
 
@@ -180,7 +189,7 @@ public class TemplateTest {
   }
 
   @Test
-  public void canHaveValues() {
+  void canHaveValues() {
     Template.Builder builder = Option.newTemplate().maxValues(1);
 
     assertThat(new Template(builder).canHaveValues(), is(true));
@@ -190,33 +199,37 @@ public class TemplateTest {
   }
 
   @Test
-  public void valueName() {
+  void valueName() {
     Template.Builder builder = Option.newTemplate().valueName("SIZE");
     assertThat(new Template(builder).getValueName(), optionalWithValue("SIZE"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullValueName() {
-    Option.newTemplate().valueName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void blankValueName() {
-    Option.newTemplate().valueName("  ");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void nameMissing() {
-    Option.newTemplate().build();
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void tooFewValues() {
-    Option.newTemplate().shortName("-b").minValues(2).maxValues(1).build();
+  @Test
+  void nullValueName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().valueName(null));
   }
 
   @Test
-  public void builderReUsage() {
+  void blankValueName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newTemplate().valueName("  "));
+  }
+
+  @Test
+  void nameMissing() {
+    assertThrows(IllegalStateException.class,
+      () -> Option.newTemplate().build());
+  }
+
+  @Test
+  void tooFewValues() {
+    assertThrows(IllegalStateException.class, () ->
+      Option.newTemplate().shortName("-b").minValues(2).maxValues(1).build());
+  }
+
+  @Test
+  void builderReUsage() {
     Template.Builder builder = Option.newTemplate();
 
     Template templateA = builder.shortName("a").build();
@@ -227,7 +240,7 @@ public class TemplateTest {
   }
 
   @Test
-  public void stringValue() {
+  void stringValue() {
     // Builder with no name.
     Template.Builder builder = Option.newTemplate();
     assertThat(builder.toString(), is("-<undefined>"));

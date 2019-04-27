@@ -16,32 +16,30 @@
 package be.nepherte.commons.cli.internal;
 
 import be.nepherte.commons.cli.Option;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Test that covers {@link Predicates}.
  */
-public class PredicatesTest {
+class PredicatesTest {
 
   @Test
-  public void not() {
+  void not() {
     Predicate<Object> p1 = input -> true;
     Predicate<Object> p2 = Predicates.not(p1);
     assertThat(p2.test(new Object()), is(false));
   }
 
   @Test
-  public void and() {
+  void and() {
     Object object = new Object();
 
     Predicate<Object> p1 = ignored -> false;
@@ -59,7 +57,7 @@ public class PredicatesTest {
   }
 
   @Test
-  public void or() {
+  void or() {
     Object object = new Object();
 
     Predicate<Object> p1 = ignored -> false;
@@ -77,7 +75,7 @@ public class PredicatesTest {
   }
 
   @Test
-  public void eq() {
+  void eq() {
     Object object1 = new Object();
     Object object2 = new Object();
 
@@ -87,21 +85,21 @@ public class PredicatesTest {
   }
 
   @Test
-  public void isNull() {
+  void isNull() {
     Predicate<Object> predicate = Predicates.isNull();
     assertThat(predicate.test(new Object()), is(false));
     assertThat(predicate.test(null), is(true));
   }
 
   @Test
-  public void notNull() {
+  void notNull() {
     Predicate<Object> predicate = Predicates.notNull();
     assertThat(predicate.test(new Object()), is(true));
     assertThat(predicate.test(null), is(false));
   }
 
   @Test
-  public void notNullFunction() {
+  void notNullFunction() {
     Object nullObject = null;
     Object object = mock(Object.class);
 
@@ -115,7 +113,7 @@ public class PredicatesTest {
   }
 
   @Test
-  public void greaterThan() {
+  void greaterThan() {
     Predicate<Comparable<Integer>> predicate = Predicates.greaterThan(0);
     assertThat(predicate.test(1), is(true));
     assertThat(predicate.test(0), is(false));
@@ -123,7 +121,7 @@ public class PredicatesTest {
   }
 
   @Test
-  public void smallerThan() {
+  void smallerThan() {
     Predicate<Comparable<Integer>> predicate = Predicates.smallerThan(0);
     assertThat(predicate.test(1), is(false));
     assertThat(predicate.test(0), is(false));
@@ -131,7 +129,7 @@ public class PredicatesTest {
   }
 
   @Test
-  public void between() {
+  void between() {
     Predicate<Comparable<Integer>> predicate = Predicates.between(0, 9);
     assertThat(predicate.test(-1), is(false));
     assertThat(predicate.test(0), is(false));
@@ -142,28 +140,28 @@ public class PredicatesTest {
   }
 
   @Test
-  public void noSpace() {
+  void noSpace() {
     Predicate<String> predicate = Predicates.noSpace();
     assertThat(predicate.test("a space"), is(false));
     assertThat(predicate.test("nospace"), is(true));
   }
 
   @Test
-  public void notEmpty() {
+  void notEmpty() {
     Predicate<String> predicate = Predicates.notEmpty();
     assertThat(predicate.test(""), is(false));
     assertThat(predicate.test("a"), is(true));
   }
 
   @Test
-  public void notBlank() {
+  void notBlank() {
     Predicate<String> predicate = Predicates.notBlank();
     assertThat(predicate.test("   "), is(false));
     assertThat(predicate.test("not blank"), is(true));
   }
 
   @Test
-  public void notRequired() {
+  void notRequired() {
     Option.Template template1 = mock(Option.Template.class);
     when(template1.isRequired()).thenReturn(false);
 

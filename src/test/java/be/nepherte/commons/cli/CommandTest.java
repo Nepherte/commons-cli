@@ -15,7 +15,7 @@
  */
 package be.nepherte.commons.cli;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,34 +24,36 @@ import java.util.Optional;
 import static be.nepherte.commons.cli.internal.Collections.immutableListOf;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Test that covers {@link Command}.
  */
-public class CommandTest {
+class CommandTest {
 
   @Test
-  public void name() {
+  void name() {
     Command.Builder builder = Command.newInstance().name("ls");
     assertThat(new Command(builder).getName(), optionalWithValue("ls"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullName() {
-    Command.newInstance().name(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void nameWithSpace() {
-    Command.newInstance().name("command\tname");
+  @Test
+  void nullName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Command.newInstance().name(null));
   }
 
   @Test
-  public void shortOption() {
+  void nameWithSpace() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Command.newInstance().name("command\tname"));
+  }
+
+  @Test
+  void shortOption() {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
@@ -64,7 +66,7 @@ public class CommandTest {
   }
 
   @Test
-  public void longOption() {
+  void longOption() {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.empty());
     when(option.getLongName()).thenReturn(Optional.of("block"));
@@ -77,7 +79,7 @@ public class CommandTest {
   }
 
   @Test
-  public void optionIterable() {
+  void optionIterable() {
     Option o1 = mock(Option.class);
     when(o1.getShortName()).thenReturn(Optional.of("a"));
     when(o1.getLongName()).thenReturn(Optional.empty());
@@ -95,13 +97,14 @@ public class CommandTest {
     assertThat(command.hasOption("b"), is(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullOptionIterable() {
-    Command.newInstance().options((Iterable<Option>) null);
+  @Test
+  void nullOptionIterable() {
+    assertThrows(IllegalArgumentException.class, () ->
+      Command.newInstance().options((Iterable<Option>) null));
   }
 
   @Test
-  public void optionArray() {
+  void optionArray() {
     Option o1 = mock(Option.class);
     when(o1.getShortName()).thenReturn(Optional.of("a"));
     when(o1.getLongName()).thenReturn(Optional.empty());
@@ -117,13 +120,14 @@ public class CommandTest {
     assertThat(command.hasOption("b"), is(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullOptionArray() {
-    Command.newInstance().options((Option[]) null);
+  @Test
+  void nullOptionArray() {
+    assertThrows(IllegalArgumentException.class, () ->
+      Command.newInstance().options((Option[]) null));
   }
 
   @Test
-  public void duplicateOptions() {
+  void duplicateOptions() {
     Option o1 = mock(Option.class);
     when(o1.getName()).thenReturn("a");
     when(o1.getShortName()).thenReturn(Optional.of("a"));
@@ -144,7 +148,7 @@ public class CommandTest {
   }
 
   @Test
-  public void optionValue() {
+  void optionValue() {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
@@ -155,7 +159,7 @@ public class CommandTest {
   }
 
   @Test
-  public void firstOptionValue() {
+  void firstOptionValue() {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
@@ -165,35 +169,37 @@ public class CommandTest {
     assertThat(new Command(builder).getOptionValue("b"), is("1"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void optionUnknown() {
+  @Test
+  void optionUnknown() {
     Command.Builder builder = Command.newInstance();
-    new Command(builder).getOptionValue("unknown");
+    assertThrows(IllegalArgumentException.class, () ->
+      new Command(builder).getOptionValue("unknown"));
   }
 
   @Test
-  public void argument() {
+  void argument() {
     Command.Builder builder = Command.newInstance().argument("arg");
     assertThat(new Command(builder).argumentCount(), is(1));
     assertThat(new Command(builder).getArgument(0), is("arg"));
   }
 
   @Test
-  public void whitespaceArgument() {
+  void whitespaceArgument() {
     Command.Builder builder = Command.newInstance().argument("  ");
     assertThat(new Command(builder).argumentCount(), is(1));
     assertThat(new Command(builder).getArgument(0), is("  "));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void absentArgument() {
+  @Test
+  void absentArgument() {
     Command.Builder builder = Command.newInstance();
     assertThat(new Command(builder).argumentCount(), is(0));
-    new Command(builder).getArgument(0);
+    assertThrows(IllegalArgumentException.class,
+      () -> new Command(builder).getArgument(0));
   }
 
   @Test
-  public void argumentIterable() {
+  void argumentIterable() {
     List<String> args = Arrays.asList("arg1", "arg2", "arg3");
 
     Command.Builder builder = Command.newInstance().arguments(args);
@@ -205,13 +211,14 @@ public class CommandTest {
     assertThat(command.getArgument(2), is("arg3"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullArgumentIterable() {
-    Command.newInstance().arguments((Iterable<String>) null);
+  @Test
+  void nullArgumentIterable() {
+    assertThrows(IllegalArgumentException.class, () ->
+      Command.newInstance().arguments((Iterable<String>) null));
   }
 
   @Test
-  public void argumentArray() {
+  void argumentArray() {
     String[] args = {"arg1", "arg2", "arg3"};
 
     Command.Builder builder = Command.newInstance().arguments(args);
@@ -223,13 +230,14 @@ public class CommandTest {
     assertThat(command.getArgument(2), is("arg3"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullArgumentArray() {
-    Command.newInstance().arguments((String[]) null);
+  @Test
+  void nullArgumentArray() {
+    assertThrows(IllegalArgumentException.class, () ->
+      Command.newInstance().arguments((String[]) null));
   }
 
   @Test
-  public void stringValue() {
+  void stringValue() {
     Option optionA = mock(Option.class);
     when(optionA.toString()).thenReturn("-a");
 

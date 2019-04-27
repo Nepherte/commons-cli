@@ -15,76 +15,85 @@
  */
 package be.nepherte.commons.cli;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static be.nepherte.commons.test.Matchers.optionalWithValue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static be.nepherte.commons.test.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test that covers options and their builders.
  */
-public class OptionTest {
+class OptionTest {
 
   @Test
-  public void shortName() {
+  void shortName() {
     Option.Builder builder = Option.newInstance().shortName("-b");
     assertThat(new Option(builder).getShortName(), optionalWithValue("b"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullShortName() {
-    Option.newInstance().shortName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void emptyShortName() {
-    Option.newInstance().shortName("");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void shortNameWithSpace() {
-    Option.newInstance().shortName("short\tname");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void dashOnlyShortName() {
-    Option.newInstance().shortName("--");
+  @Test
+  void nullShortName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().shortName(null));
   }
 
   @Test
-  public void longName() {
+  void emptyShortName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().shortName(""));
+  }
+
+  @Test
+  void shortNameWithSpace() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().shortName("short\tname"));
+  }
+
+  @Test
+  void dashOnlyShortName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().shortName("--"));
+  }
+
+  @Test
+  void longName() {
     Option.Builder builder = Option.newInstance().longName("--block");
     assertThat(new Option(builder).getLongName(), optionalWithValue("block"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullLongName() {
-    Option.newInstance().longName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void emptyLongName() {
-    Option.newInstance().longName("");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void longNameWithSpace() {
-    Option.newInstance().longName("long\tname");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void dashOnlyLongName() {
-    Option.newInstance().longName("--");
+  @Test
+  void nullLongName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().longName(null));
   }
 
   @Test
-  public void name() {
+  void emptyLongName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().longName(""));
+  }
+
+  @Test
+  void longNameWithSpace() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().longName("long\tname"));
+  }
+
+  @Test
+  void dashOnlyLongName() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().longName("--"));
+  }
+
+  @Test
+  void name() {
     // Only short name available.
     Option.Builder builder = Option.newInstance().shortName("-b");
     assertThat(new Option(builder).getName(), is("b"));
@@ -99,7 +108,7 @@ public class OptionTest {
   }
 
   @Test
-  public void templateCopy() {
+  void templateCopy() {
     Option.Template template = Option.newTemplate()
       .shortName("b").longName("block").build();
 
@@ -109,55 +118,60 @@ public class OptionTest {
   }
 
   @Test
-  public void value() {
+  void value() {
     Option.Builder builder = Option.newInstance().value("8");
     assertThat(new Option(builder).getValue(), optionalWithValue("8"));
     assertThat(new Option(builder).getValues(), contains("8"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullValue() {
-    Option.newInstance().value(null);
+  @Test
+  void nullValue() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().value(null));
   }
 
   @Test
-  public void valuesArray() {
+  void valuesArray() {
     Option.Builder builder = Option.newInstance().values("8", "9");
     assertThat(new Option(builder).getValues(), contains("8", "9"));
     assertThat(new Option(builder).getValue(), optionalWithValue("8"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullValuesArray() {
-    Option.newInstance().values((String[]) null);
+  @Test
+  void nullValuesArray() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().values((String[]) null));
   }
 
   @Test
-  public void valuesIterable() {
+  void valuesIterable() {
     List<String> values = Arrays.asList("8", "9");
     Option.Builder builder = Option.newInstance().values(values);
     assertThat(new Option(builder).getValues(), contains("8", "9"));
     assertThat(new Option(builder).getValue(), optionalWithValue("8"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void nullValuesIterable() {
-    Option.newInstance().values((Iterable<String>) null);
-  }
-
-  @Test( expected = UnsupportedOperationException.class)
-  public void immutableValues() {
-    Option.Builder builder = Option.newInstance();
-    new Option(builder).getValues().add("10");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void nameMissing() {
-    Option.newInstance().build();
+  @Test
+  void nullValuesIterable() {
+    assertThrows(IllegalArgumentException.class,
+      () -> Option.newInstance().values((Iterable<String>) null));
   }
 
   @Test
-  public void builderReUsage() {
+  void immutableValues() {
+    Option.Builder builder = Option.newInstance();
+    assertThrows(UnsupportedOperationException.class,
+      () -> new Option(builder).getValues().add("10"));
+  }
+
+  @Test
+  void nameMissing() {
+    assertThrows(IllegalStateException.class,
+      () -> Option.newInstance().build());
+  }
+
+  @Test
+  void builderReUsage() {
     Option.Builder builder = Option.newInstance();
 
     Option optionA = builder.shortName("a").build();
@@ -168,7 +182,7 @@ public class OptionTest {
   }
 
   @Test
-  public void stringValue() {
+  void stringValue() {
     // Builder with no name.
     Option.Builder builder = Option.newInstance();
     assertThat(builder.toString(), is("-<undefined>"));

@@ -15,79 +15,74 @@
  */
 package be.nepherte.commons.cli.internal;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
+import org.junit.jupiter.api.Test;
 import java.util.function.Predicate;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
+
+import static be.nepherte.commons.cli.internal.Preconditions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Test that covers {@link Preconditions}.
  */
-public class PreconditionsTest {
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
+class PreconditionsTest {
 
   @Test
-  public void requireArg() {
+  void requireArgSuccess() {
     Object object = new Object();
 
     //noinspection unchecked all good.
     Predicate<Object> predicate = mock(Predicate.class);
     when(predicate.test(any(Object.class))).thenReturn(true);
 
-    Object result = Preconditions.requireArg(object, predicate, "ignored");
+    Object result = requireArg(object, predicate, "ignored");
     assertThat(result, is(object));
     verify(predicate).test(object);
   }
 
   @Test
-  public void requireArgException() {
+  void requireArgException() {
     Integer integer = Integer.valueOf(3);
 
     //noinspection unchecked all good.
     Predicate<Integer> predicate = mock(Predicate.class);
     when(predicate.test(any(Integer.class))).thenReturn(false);
 
-    thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("Value is 3");
+    assertThrows(IllegalArgumentException.class, () ->
+      requireArg(integer, predicate, "Value is %d"), "Value is 3");
 
-    Preconditions.requireArg(integer, predicate, "Value is %d");
+    verify(predicate).test(integer);
   }
 
   @Test
-  public void requireState() {
+  void requireStateSuccess() {
     Object object = new Object();
 
     //noinspection unchecked all good.
     Predicate<Object> predicate = mock(Predicate.class);
     when(predicate.test(object)).thenReturn(true);
 
-    Object result = Preconditions.requireState(object, predicate, "ignored");
+    Object result = requireState(object, predicate, "ignored");
     assertThat(result, is(object));
     verify(predicate).test(object);
   }
 
   @Test
-  public void requireStateException() {
+  void requireStateException() {
     Integer integer = Integer.valueOf(3);
 
     //noinspection unchecked all good.
     Predicate<Integer> predicate = mock(Predicate.class);
     when(predicate.test(integer)).thenReturn(false);
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Value is 3");
+    assertThrows(IllegalStateException.class, () ->
+      requireState(integer, predicate, "Value is %d"), "Value is 3");
 
-    Preconditions.requireState(integer, predicate, "Value is %d");
     verify(predicate).test(integer);
   }
 }
