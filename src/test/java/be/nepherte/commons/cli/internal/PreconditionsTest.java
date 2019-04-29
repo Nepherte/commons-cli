@@ -24,9 +24,6 @@ import static org.hamcrest.MatcherAssert.*;
 import static be.nepherte.commons.cli.internal.Preconditions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 /**
  * Test that covers {@link Preconditions}.
  */
@@ -34,55 +31,38 @@ class PreconditionsTest {
 
   @Test
   void requireArgSuccess() {
-    Object object = new Object();
+    Object input = new Object();
 
-    //noinspection unchecked all good.
-    Predicate<Object> predicate = mock(Predicate.class);
-    when(predicate.test(any(Object.class))).thenReturn(true);
+    Predicate<Object> predicate = object -> true;
+    Object result = requireArg(input, predicate, "ignored");
 
-    Object result = requireArg(object, predicate, "ignored");
-    assertThat(result, is(object));
-    verify(predicate).test(object);
+    assertThat(result, is(input));
   }
 
   @Test
   void requireArgException() {
     Integer integer = Integer.valueOf(3);
-
-    //noinspection unchecked all good.
-    Predicate<Integer> predicate = mock(Predicate.class);
-    when(predicate.test(any(Integer.class))).thenReturn(false);
-
+    Predicate<Object> predicate = object -> false;
     assertThrows(IllegalArgumentException.class, () ->
       requireArg(integer, predicate, "Value is %d"), "Value is 3");
-
-    verify(predicate).test(integer);
   }
 
   @Test
   void requireStateSuccess() {
-    Object object = new Object();
+    Object input = new Object();
 
-    //noinspection unchecked all good.
-    Predicate<Object> predicate = mock(Predicate.class);
-    when(predicate.test(object)).thenReturn(true);
+    Predicate<Object> predicate = object -> true;
+    Object result = requireState(input, predicate, "ignored");
 
-    Object result = requireState(object, predicate, "ignored");
-    assertThat(result, is(object));
-    verify(predicate).test(object);
+    assertThat(result, is(input));
   }
 
   @Test
   void requireStateException() {
     Integer integer = Integer.valueOf(3);
-
-    //noinspection unchecked all good.
-    Predicate<Integer> predicate = mock(Predicate.class);
-    when(predicate.test(integer)).thenReturn(false);
-
+    Predicate<Integer> predicate = aObject -> false;
     assertThrows(IllegalStateException.class, () ->
       requireState(integer, predicate, "Value is %d"), "Value is 3");
 
-    verify(predicate).test(integer);
   }
 }

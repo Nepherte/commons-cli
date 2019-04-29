@@ -23,7 +23,6 @@ import java.util.function.Predicate;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -100,16 +99,11 @@ class PredicatesTest {
 
   @Test
   void notNullFunction() {
-    Object nullObject = null;
-    Object object = mock(Object.class);
+    Predicate<Object> p1 = Predicates.notNull(Function.identity());
+    assertThat(p1.test("ignored"), is(true));
 
-    //noinspection unchecked these are not the droids you're looking for.
-    Function<Object,Object> function = mock(Function.class);
-    when(function.apply(anyString())).thenReturn(object, nullObject);
-
-    Predicate<Object> predicate = Predicates.notNull(function);
-    assertThat(predicate.test("ignored"), is(true));
-    assertThat(predicate.test("ignored"), is(false));
+    Predicate<Object> p2 = Predicates.notNull(object -> null);
+    assertThat(p2.test("ignored"), is(false));
   }
 
   @Test
