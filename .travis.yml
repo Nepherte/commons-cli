@@ -1,17 +1,29 @@
-# Source code language.
+# Source language.
 language: java
 
-# Support OpenJDK 11+
+# Supported JDKs.
 jdk:
-- openjdk11
+  - oraclejdk11
+  - openjdk11
 
-# Decrypt sftp secrets.
-before_install:
-- openssl aes-256-cbc
-    -K $encrypted_6d162d86900c_key
-    -iv $encrypted_6d162d86900c_iv
-    -in src/etc/ivy/sftp.properties.enc
-    -out src/etc/ivy/sftp.properties -d
+# Cache Ivy stuff.
+cache:
+  directories:
+    - $HOME/.ivy2
 
-# Use Ant to compile, test, package and publish.
-script: ant -f src/etc/ant/build.xml ci
+# Install tool chain.
+install:
+  - src/etc/travis/install-ant-libs.sh
+
+# Execute unit tests.
+script:
+  - src/etc/travis/run-unit-tests.sh
+
+# Deploy artifacts.
+jobs:
+  include:
+    - stage: deploy
+      jdk: openjdk11
+      if: tag is present or branch = develop
+      script:
+        - src/etc/travis/deploy-artifacts.sh

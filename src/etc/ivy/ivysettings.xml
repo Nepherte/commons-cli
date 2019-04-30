@@ -1,32 +1,26 @@
 ﻿<ivysettings>
   <!-- Default resolver -->
-  <settings defaultResolver="http"/>
+  <settings defaultResolver="production"/>
 
   <!-- Resolver properties -->
-  <properties file="http.properties"/>
-  <properties file="sftp.properties"/>
+  <properties file="production.properties"/>
 
-  <!-- Cache properties -->
-  <properties file="cache.properties"/>
-
-  <caches
-      ivyPattern="${cache.repo.pattern}/ivy.xml"
-      artifactPattern="${cache.repo.pattern}/${cache.artifact.pattern}"/>
+  <caches>
+    <!-- Cache for the production resolver -->
+    <cache name="cache-production"
+      basedir="${ivy.home}/${prod.cache.dir}"
+      ivyPattern="${prod.repo.pattern}/ivy.xml"
+      artifactPattern="${prod.repo.pattern}/${prod.artifact.pattern}"/>
+  </caches>
 
   <resolvers>
-    <!-- Online repository from which to retrieve dependencies -->
-    <url name="http">
-      <ivy pattern="${http.repo.pattern}/ivy.xml"/>
-      <artifact pattern="${http.repo.pattern}/${http.artifact.pattern}"/>
-    </url>
+    <!-- Packager repository in which to publish the artifacts -->
+    <sftp name="production"
+      host="${prod.hostname}" user="${prod.username}"
+      keyFile="${ivy.settings.dir}/${prod.keyFile}">
 
-    <!-- Online repository in which to publish the artifacts -->
-    <sftp
-      name="sftp" host="${sftp.hostname}"
-      user="${sftp.username}" userPassword="${sftp.password}">
-
-      <ivy pattern="${sftp.repo.pattern}/ivy.xml"/>
-      <artifact pattern="${sftp.repo.pattern}/${sftp.artifact.pattern}"/>
+      <ivy pattern="${prod.repo.pattern}/ivy.xml"/>
+      <artifact pattern="${prod.repo.pattern}/${prod.artifact.pattern}"/>
     </sftp>
   </resolvers>
 </ivysettings>
