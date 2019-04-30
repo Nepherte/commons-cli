@@ -5,17 +5,31 @@
   xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
   <info organisation="be.nepherte" module="commons-cli">
+    <!-- The license under which the module is published. -->
     <license name="Apache License 2.0"/>
 
-    <description homepage="https://github.com/Nepherte/Commons-CLI">
+    <!-- The writer of the module ivy file. -->
+    <ivyauthor name="Bart Verhoeven" url="https://www.nepherte.be"/>
+
+    <!-- The repo to which the module is published. -->
+    <repository name="Nepherte Ivy Repo"
+      url="https://ivy.nepherte.be"  artifacts="true" ivys="true"
+      pattern="[organisation]/[module]/[revision]/ivy.xml" />
+
+    <!-- Short description of the module. -->
+    <description homepage="https://github.com/Nepherte/commons-cli">
       Java library for parsing command line options and arguments.
     </description>
   </info>
 
   <configurations>
     <conf name="release" description="Published artifacts"/>
+    <conf name="compile" description="Compile dependencies"/>
+    <conf name="runtime" description="Runtime dependencies"/>
+    <conf name="provided" description="Provided dependencies"/>
     <conf name="testing" description="Testing dependencies"/>
-    <conf name="default" description="Default configuration" extends="release"/>
+    <conf name="default" description="Default configuration"
+      extends="release,compile,runtime"/>
   </configurations>
 
   <publications defaultconf="release">

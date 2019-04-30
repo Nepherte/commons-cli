@@ -7,4 +7,4 @@ out/
 target/
 
 # Secrets
-**/sftp.properties
+**/*.key
