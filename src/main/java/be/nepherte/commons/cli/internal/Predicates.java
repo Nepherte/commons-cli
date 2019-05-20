@@ -80,16 +80,6 @@ public final class Predicates {
   }
 
   /**
-   * Predicate that tests for null values.
-   *
-   * @param <T> the type of input for the predicate.
-   * @return a new predicate that tests for null values
-   */
-  public static <T> Predicate<T> isNull() {
-    return Objects::isNull;
-  }
-
-  /**
    * Predicate that tests for non-null values.
    *
    * @param <T> the type of input for the predicate
