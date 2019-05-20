@@ -84,13 +84,6 @@ class PredicatesTest {
   }
 
   @Test
-  void isNull() {
-    Predicate<Object> predicate = Predicates.isNull();
-    assertThat(predicate.test(new Object()), is(false));
-    assertThat(predicate.test(null), is(true));
-  }
-
-  @Test
   void notNull() {
     Predicate<Object> predicate = Predicates.notNull();
     assertThat(predicate.test(new Object()), is(true));
