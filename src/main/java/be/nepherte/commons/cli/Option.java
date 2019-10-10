@@ -15,8 +15,7 @@
  */
 package be.nepherte.commons.cli;
 
-import be.nepherte.commons.cli.internal.Collections;
-
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +158,7 @@ public final class Option {
    * @return the values of this option as an immutable list
    */
   public List<String> getValues() {
-    return Collections.immutableList(values);
+    return Collections.unmodifiableList(values);
   }
 
   /**
@@ -821,7 +820,7 @@ public final class Option {
      * @return the templates in this group as an immutable set
      */
     public Set<Template> getTemplates() {
-      return Collections.immutableSet(templates);
+      return Collections.unmodifiableSet(templates);
     }
 
     /**
