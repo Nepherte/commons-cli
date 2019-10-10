@@ -15,10 +15,10 @@
  */
 package be.nepherte.commons.cli;
 
-import be.nepherte.commons.cli.internal.Collections;
 import be.nepherte.commons.cli.internal.Strings;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -458,7 +458,7 @@ public final class Command {
      * @return the templates of this descriptor as an immutable set
      */
     public Set<Option.Template> getTemplates() {
-      return Collections.immutableSet(templates);
+      return Collections.unmodifiableSet(templates);
     }
 
     /**
@@ -469,7 +469,7 @@ public final class Command {
     public Set<Option.Template> getRequiredTemplates() {
       return templates
         .stream().filter(Option.Template::isRequired)
-        .collect(collectingAndThen(toSet(), Collections::immutableSet));
+        .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
     }
 
     /**
@@ -500,7 +500,7 @@ public final class Command {
      * @return the groups of this descriptor as an immutable set
      */
     public Set<Option.Group> getGroups() {
-      return Collections.immutableSet(groups);
+      return Collections.unmodifiableSet(groups);
     }
 
     /**
@@ -511,7 +511,7 @@ public final class Command {
     public Set<Option.Group> getRequiredGroups() {
       return groups
         .stream().filter(Option.Group::isRequired)
-        .collect(collectingAndThen(toSet(), Collections::immutableSet));
+        .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
     }
 
     /**

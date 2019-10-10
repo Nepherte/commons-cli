@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 
-import static be.nepherte.commons.cli.internal.Collections.immutableSetOf;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -230,7 +230,7 @@ class DescriptorTest {
 
     Option.Group group = mock(Option.Group.class);
     when(group.isRequired()).thenReturn(false);
-    when(group.getTemplates()).thenReturn(immutableSetOf(template));
+    when(group.getTemplates()).thenReturn(Set.of(template));
 
     Descriptor.Builder builder = Command.newDescriptor().group(group);
     Descriptor descriptor = new Descriptor(builder);
@@ -250,7 +250,7 @@ class DescriptorTest {
 
     Option.Group g = mock(Option.Group.class);
     when(g.isRequired()).thenReturn(true);
-    when(g.getTemplates()).thenReturn(immutableSetOf(t));
+    when(g.getTemplates()).thenReturn(Set.of(t));
 
     Descriptor.Builder builder = Command.newDescriptor().group(g);
     Descriptor descriptor = new Descriptor(builder);
@@ -275,10 +275,10 @@ class DescriptorTest {
     Template templateB = mock(Template.class);
 
     Option.Group groupA = mock(Option.Group.class);
-    when(groupA.getTemplates()).thenReturn(immutableSetOf(templateA));
+    when(groupA.getTemplates()).thenReturn(Set.of(templateA));
 
     Option.Group groupB = mock(Option.Group.class);
-    when(groupB.getTemplates()).thenReturn(immutableSetOf(templateB));
+    when(groupB.getTemplates()).thenReturn(Set.of(templateB));
 
     Descriptor.Builder builder = Command.newDescriptor();
     builder = builder.groups(groupA, groupB);
@@ -305,10 +305,10 @@ class DescriptorTest {
     Template templateB = mock(Template.class);
 
     Option.Group groupA = mock(Option.Group.class);
-    when(groupA.getTemplates()).thenReturn(immutableSetOf(templateA));
+    when(groupA.getTemplates()).thenReturn(Set.of(templateA));
 
     Option.Group groupB = mock(Option.Group.class);
-    when(groupB.getTemplates()).thenReturn(immutableSetOf(templateB));
+    when(groupB.getTemplates()).thenReturn(Set.of(templateB));
 
     Descriptor.Builder builder = Command.newDescriptor();
     builder = builder.groups(Arrays.asList(groupA, groupB));

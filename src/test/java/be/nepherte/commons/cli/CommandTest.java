@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static be.nepherte.commons.cli.internal.Collections.immutableListOf;
 import static be.nepherte.commons.test.Matchers.optionalWithValue;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -132,13 +131,13 @@ class CommandTest {
     when(o1.getName()).thenReturn("a");
     when(o1.getShortName()).thenReturn(Optional.of("a"));
     when(o1.getLongName()).thenReturn(Optional.empty());
-    when(o1.getValues()).thenReturn(immutableListOf("1"));
+    when(o1.getValues()).thenReturn(List.of("1"));
 
     Option o2 = mock(Option.class);
     when(o2.getName()).thenReturn("a");
     when(o2.getShortName()).thenReturn(Optional.of("a"));
     when(o2.getLongName()).thenReturn(Optional.empty());
-    when(o2.getValues()).thenReturn(immutableListOf("2"));
+    when(o2.getValues()).thenReturn(List.of("2"));
 
     Command.Builder builder = Command.newInstance().options(o1, o2);
     Command command = new Command(builder);
@@ -152,7 +151,7 @@ class CommandTest {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
-    when(option.getValues()).thenReturn(immutableListOf("1"));
+    when(option.getValues()).thenReturn(List.of("1"));
 
     Command.Builder builder = Command.newInstance().option(option);
     assertThat(new Command(builder).getOptionValue("b"), is("1"));
@@ -163,7 +162,7 @@ class CommandTest {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
-    when(option.getValues()).thenReturn(immutableListOf("1", "2"));
+    when(option.getValues()).thenReturn(List.of("1", "2"));
 
     Command.Builder builder = Command.newInstance().option(option);
     assertThat(new Command(builder).getOptionValue("b"), is("1"));
