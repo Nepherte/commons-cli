@@ -4,16 +4,16 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-  <info organisation="be.nepherte" module="commons-cli">
+  <info organisation="com.nepherte" module="commons-cli">
     <!-- The license under which the module is published. -->
     <license name="Apache License 2.0"/>
 
     <!-- The writer of the module ivy file. -->
-    <ivyauthor name="Bart Verhoeven" url="https://www.nepherte.be"/>
+    <ivyauthor name="Bart Verhoeven" url="https://github.com/Nepherte/"/>
 
     <!-- The repo to which the module is published. -->
     <repository name="Nepherte Ivy Repo"
-      url="https://ivy.nepherte.be"  artifacts="true" ivys="true"
+      url="https://ivy.nepherte.com"  artifacts="true" ivys="true"
       pattern="[organisation]/[module]/[revision]/ivy.xml" />
 
     <!-- Short description of the module. -->
