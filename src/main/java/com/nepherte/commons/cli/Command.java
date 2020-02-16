@@ -809,7 +809,7 @@ public final class Command {
     @Override
     public boolean test(Option.Template template) {
       Optional<String> shortName = template.getShortName();
-      return shortName.isPresent() && shortName.get().equals(name);
+      return shortName.filter(name::equals).isPresent();
     }
   }
 
@@ -831,7 +831,7 @@ public final class Command {
     @Override
     public boolean test(Option.Template option) {
       Optional<String> longName = option.getLongName();
-      return longName.isPresent() && longName.get().equals(name);
+      return longName.filter(name::equals).isPresent();
     }
   }
 

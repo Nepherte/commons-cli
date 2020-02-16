@@ -18,7 +18,6 @@ package com.nepherte.commons.test;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -42,13 +41,7 @@ final class OptionalWithValue<T> extends BaseMatcher<Optional<T>> {
   @Override
   public boolean matches(Object item) {
     Optional<?> optional = (Optional<?>) item;
-
-    if (!optional.isPresent()) {
-      return false;
-    }
-
-    Object optionalValue = optional.get();
-    return Objects.equals(expected, optionalValue);
+    return optional.filter(expected::equals).isPresent();
   }
 
   @Override
