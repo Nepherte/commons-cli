@@ -380,7 +380,7 @@ public final class Option {
   }
 
   /**
-   * <p>An <em>immutable</em> template that describes one options of a
+   * <p>An <em>immutable</em> template that describes the options of a
    * {@link Command}. It acts as a <em>blueprint</em> that spells out exactly
    * what an {@link Option} should look like. Failing to comply to this
    * blueprint is a direct violation of the contract.
