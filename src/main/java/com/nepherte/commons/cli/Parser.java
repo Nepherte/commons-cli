@@ -15,6 +15,8 @@
  */
 package com.nepherte.commons.cli;
 
+import com.nepherte.commons.cli.exception.ParseException;
+
 /**
  * An object that parses tokens according to a {@link Command.Descriptor
  * Descriptor}. The result is an <em>immutable</em> representation of a {@link
@@ -33,19 +35,4 @@ public interface Parser {
    */
   Command parse(String[] tokens) throws ParseException;
 
-  /**
-   * Exception thrown when a parser encounters an issue.
-   */
-  class ParseException extends Exception {
-    private static final long serialVersionUID = 2624991404609831294L;
-
-    /**
-     * Creates a new {@code Exception}.
-     *
-     * @param message the error message
-     */
-    protected ParseException(String message) {
-      super(message);
-    }
-  }
 }
