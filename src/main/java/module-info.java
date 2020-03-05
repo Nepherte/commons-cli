@@ -5,4 +5,5 @@ module nepherte.commons.cli {
   // export visible api only.
   exports com.nepherte.commons.cli;
   exports com.nepherte.commons.cli.parser;
+  exports com.nepherte.commons.cli.exception;
 }

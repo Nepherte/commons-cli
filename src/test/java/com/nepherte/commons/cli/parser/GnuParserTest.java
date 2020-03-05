@@ -20,16 +20,16 @@ import com.nepherte.commons.cli.Command.Descriptor;
 import com.nepherte.commons.cli.Option;
 import com.nepherte.commons.cli.Option.Group;
 import com.nepherte.commons.cli.Option.Template;
-import com.nepherte.commons.cli.Parser.ParseException;
+import com.nepherte.commons.cli.exception.ParseException;
 
-import com.nepherte.commons.cli.internal.Exceptions.ExclusiveOptionsException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingArgumentException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingGroupException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingOptionException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingValueException;
-import com.nepherte.commons.cli.internal.Exceptions.TooManyArgumentsException;
-import com.nepherte.commons.cli.internal.Exceptions.TooManyValuesException;
-import com.nepherte.commons.cli.internal.Exceptions.UnrecognizedTokenException;
+import com.nepherte.commons.cli.exception.ExclusiveOptionsException;
+import com.nepherte.commons.cli.exception.MissingArgumentException;
+import com.nepherte.commons.cli.exception.MissingGroupException;
+import com.nepherte.commons.cli.exception.MissingOptionException;
+import com.nepherte.commons.cli.exception.MissingValueException;
+import com.nepherte.commons.cli.exception.TooManyArgumentsException;
+import com.nepherte.commons.cli.exception.TooManyValuesException;
+import com.nepherte.commons.cli.exception.UnrecognizedTokenException;
 
 import org.junit.jupiter.api.Test;
 

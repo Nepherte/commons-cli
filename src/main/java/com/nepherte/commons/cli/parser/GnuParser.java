@@ -19,14 +19,7 @@ import com.nepherte.commons.cli.Command;
 import com.nepherte.commons.cli.Option;
 import com.nepherte.commons.cli.Parser;
 
-import com.nepherte.commons.cli.internal.Exceptions.ExclusiveOptionsException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingArgumentException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingGroupException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingOptionException;
-import com.nepherte.commons.cli.internal.Exceptions.MissingValueException;
-import com.nepherte.commons.cli.internal.Exceptions.TooManyArgumentsException;
-import com.nepherte.commons.cli.internal.Exceptions.TooManyValuesException;
-import com.nepherte.commons.cli.internal.Exceptions.UnrecognizedTokenException;
+import com.nepherte.commons.cli.exception.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
