@@ -1,5 +1,5 @@
 Nepherte Commons CLI
-Copyright 2012-2018 Bart Verhoeven
+Copyright 2012-2020 Bart Verhoeven
 
 Fork of Apache Commons CLI, licenced under the Apache License 2.0
 This project can be found at http://commons.apache.org/cli/
