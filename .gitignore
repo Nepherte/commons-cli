@@ -1,10 +1,5 @@
 # IntelliJ
-*.iml
 .idea/
 
 # Output
-out/
 target/
-
-# Secrets
-**/*.key
