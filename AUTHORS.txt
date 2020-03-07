@@ -1,7 +1,0 @@
-Nepherte Commons CLI
-====================
-- Bart Verhoeven
-
-Apache Commons CLI
-==================
-See http://commons.apache.org/cli/team-list.html
