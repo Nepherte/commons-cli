@@ -20,6 +20,6 @@ jobs:
   include:
     - stage: deploy
       jdk: openjdk11
-      if: tag is present and branch = master
+      if: tag is present
       script:
         - src/etc/travis/deploy-artifacts.sh
