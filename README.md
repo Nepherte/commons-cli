@@ -1,5 +1,5 @@
 [![GitHub Version](https://img.shields.io/github/tag/Nepherte/commons-cli.svg?label=latest)](https://github.com/Nepherte/commons-cli/releases/latest)
-[![Build Status](https://img.shields.io/travis/com/Nepherte/commons-cli/master.svg)](https://travis-ci.com/Nepherte/commons-cli)
+[![Build Status](https://img.shields.io/travis/com/Nepherte/commons-cli/develop.svg)](https://travis-ci.com/Nepherte/commons-cli)
 
 **commons-cli** is a Java library to parse options and arguments passed to a 
 command line application. It can also print out help messages and usage 
