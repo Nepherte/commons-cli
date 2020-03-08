@@ -15,6 +15,10 @@ cache:
 script:
   - src/etc/travis/run-unit-tests.sh
 
+# Code coverage.
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 # Deploy artifacts.
 jobs:
   include:
