@@ -4,7 +4,7 @@
   <!-- Maven Coordinates. -->
   <groupId>com.nepherte</groupId>
   <artifactId>commons-cli</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <!-- General.-->
@@ -34,6 +34,7 @@
     <url>https://github.com/Nepherte/commons-cli</url>
     <connection>scm:git:https://github.com/Nepherte/commons-cli.git</connection>
     <developerConnection>scm:git:git@github.com:Nepherte/commons-cli.git</developerConnection>
+    <tag>1.0.0</tag>
   </scm>
 
   <!-- Issue Management. -->
