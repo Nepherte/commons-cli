@@ -1,0 +1,25 @@
+# Source language.
+language: java
+
+# Supported JDKs.
+jdk:
+  - oraclejdk11
+  - openjdk11
+
+# Cache Maven stuff.
+cache:
+  directories:
+    - $HOME/.m2
+
+# Execute unit tests.
+script:
+  - src/etc/travis/run-unit-tests.sh
+
+# Deploy artifacts.
+jobs:
+  include:
+    - stage: deploy
+      jdk: openjdk11
+      if: tag is present
+      script:
+        - src/etc/travis/deploy-artifacts.sh
