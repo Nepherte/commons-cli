@@ -1,16 +1,15 @@
 [![GitHub Version](https://img.shields.io/github/tag/Nepherte/commons-cli.svg?label=latest)](https://github.com/Nepherte/commons-cli/releases/latest)
-[![Build Status](https://img.shields.io/travis/com/Nepherte/commons-cli/develop.svg)](https://travis-ci.com/Nepherte/commons-cli)
+[![Build Status](https://img.shields.io/travis/com/Nepherte/commons-cli/master.svg)](https://travis-ci.com/Nepherte/commons-cli)
 
 **commons-cli** is a Java library to parse options and arguments passed to a 
 command line application. It can also print out help messages and usage 
 statements, detailing the interface that is available to the user.
 
-The latest version is **SNAPSHOT**, an unstable build of the **development** 
-branch:
+The latest version is **1.0.0**, released on **March 8, 2020**:
 
-- [commons-cli-SNAPSHOT.jar](http://ivy.nepherte.com/com.nepherte/commons-cli/SNAPSHOT/commons-cli-SNAPSHOT.jar)
-- [commons-cli-SNAPSHOT-javadoc.jar](http://ivy.nepherte.com/com.nepherte/commons-cli/SNAPSHOT/commons-cli-SNAPSHOT-javadoc.jar)
-- [commons-cli-SNAPSHOT-sources.jar](http://ivy.nepherte.com/com.nepherte/commons-cli/SNAPSHOT/commons-cli-SNAPSHOT-sources.jar)
+- [commons-cli-1.0.0.jar](https://github.com/Nepherte/commons-cli/releases/download/1.0.0/commons-cli-1.0.0.jar)
+- [commons-cli-1.0.0-javadoc.jar](https://github.com/Nepherte/commons-cli/releases/download/1.0.0/commons-cli-1.0.0-javadoc.jar)
+- [commons-cli-1.0.0-sources.jar](https://github.com/Nepherte/commons-cli/releases/download/1.0.0/commons-cli-1.0.0-sources.jar)
 
 Formats
 -------
