@@ -135,12 +135,18 @@ public final class GnuParser implements Parser {
     while (tokens.hasNext()) {
       String token = tokens.next();
 
+      // A single dash is an argument.
+      if (token.equals("-")) {
+        tokens.previous();
+        return;
+      }
       // A double dash marks the end.
       if (token.equals("--")) {
         return;
       }
+
       // The token looks like an option.
-      else if (token.startsWith("-")) {
+      if (token.startsWith("-")) {
         parseOption(token);
       }
       // The token is an argument.

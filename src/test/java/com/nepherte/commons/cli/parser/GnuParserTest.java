@@ -189,7 +189,6 @@ class GnuParserTest {
     GnuParser parser = new GnuParser(descriptor);
     Command cmd = parser.parse(new String[]{"-a=1"});
 
-
     assertThat(cmd.getOptionValue("a"), is("1"));
     assertThat(cmd.getOptionValues("a"), contains("1"));
   }
@@ -380,14 +379,15 @@ class GnuParserTest {
 
   @Test
   void singleDash() throws ParseException {
-    Template a = Option.newTemplate().shortName("a").build();
-
     Descriptor.Builder builder = Command.newDescriptor();
-    Descriptor descriptor = builder.templates(a).build();
+    Descriptor descriptor = builder.maxArgs(1).build();
 
     GnuParser parser = new GnuParser(descriptor);
-    assertThrows(UnrecognizedTokenException.class,
-      () -> parser.parse(new String[]{"-"}));
+    Command cmd = parser.parse(new String[]{"-"});
+
+    assertThat(cmd.hasOption(""), is(false));
+    assertThat(cmd.argumentCount(), is(1));
+    assertThat(cmd.getArgument(0), is("-"));
   }
 
   @Test
