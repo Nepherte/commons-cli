@@ -51,9 +51,9 @@
   <!-- Distribution Management. -->
   <distributionManagement>
     <repository>
-      <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/Nepherte/commons-cli</url>
+      <id>nepherte</id>
+      <name>Nepherte Maven Repo</name>
+      <url>https://maven.nepherte.com</url>
     </repository>
   </distributionManagement>
 
