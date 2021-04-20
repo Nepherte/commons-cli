@@ -1,0 +1,10 @@
+coverage:
+  status:
+    # Configure code coverage for project
+    project:
+      default:
+        # Specify minimum coverage
+        target: 90%
+
+    # Configure code coverage for patch
+    patch: off
