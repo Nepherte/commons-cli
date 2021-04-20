@@ -227,7 +227,7 @@ public final class Option {
      *
      * @param shortName the short name of the new option
      * @return this builder
-     * @throws IllegalArgumentException the name is null or empty
+     * @throws IllegalArgumentException the name is empty
      * @throws IllegalArgumentException the name has a space
      */
     public Builder shortName(String shortName) {
@@ -240,7 +240,7 @@ public final class Option {
      *
      * @param longName the long name of the new option
      * @return this builder
-     * @throws IllegalArgumentException the name is null or empty
+     * @throws IllegalArgumentException the name is empty
      * @throws IllegalArgumentException the name has a space
      */
     public Builder longName(String longName) {
@@ -359,12 +359,14 @@ public final class Option {
    *
    * @param name the option name to parse
    * @return the parsed option name
-   * @throws IllegalArgumentException the name is null or empty
+   * @throws IllegalArgumentException the name is empty
    * @throws IllegalArgumentException the name has a space
    */
   private static String parseOptionName(String name) {
-    // Null names are not allowed.
-    requireArg(name, notNull(), "The name is [%s]");
+    // Use null values to rest the option name.
+    if (name == null) {
+      return null;
+    }
 
     // Names cannot contain space(s).
     requireArg(name, noSpace(), "The name [%s] has a space");
@@ -610,7 +612,7 @@ public final class Option {
        *
        * @param shortName the short name of the new template
        * @return this builder
-       * @throws IllegalArgumentException the name is null or empty
+       * @throws IllegalArgumentException the name is empty
        * @throws IllegalArgumentException the name has a space
        */
       public Builder shortName(String shortName) {
@@ -623,7 +625,7 @@ public final class Option {
        *
        * @param longName the long name of the new template
        * @return this builder
-       * @throws IllegalArgumentException the name is null or empty
+       * @throws IllegalArgumentException the name is empty
        * @throws IllegalArgumentException the name has a space
        */
       public Builder longName(String longName) {

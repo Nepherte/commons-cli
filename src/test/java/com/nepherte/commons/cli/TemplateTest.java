@@ -39,8 +39,10 @@ class TemplateTest {
 
   @Test
   void nullShortName() {
-    assertThrows(IllegalArgumentException.class,
-      () -> Option.newTemplate().shortName(null));
+    Template.Builder builder = Option.newTemplate()
+      .shortName("-b").shortName(null);
+
+    assertThat(new Template(builder).getShortName(), optionalWithNoValue());
   }
 
   @Test
@@ -69,8 +71,10 @@ class TemplateTest {
 
   @Test
   void nullLongName() {
-    assertThrows(IllegalArgumentException.class,
-      () -> Option.newTemplate().longName(null));
+    Template.Builder builder = Option.newTemplate()
+      .longName("--block").longName(null);
+
+    assertThat(new Template(builder).getLongName(), optionalWithNoValue());
   }
 
   @Test

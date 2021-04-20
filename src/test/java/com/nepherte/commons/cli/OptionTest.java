@@ -40,8 +40,10 @@ class OptionTest {
 
   @Test
   void nullShortName() {
-    assertThrows(IllegalArgumentException.class,
-      () -> Option.newInstance().shortName(null));
+    Option.Builder builder = Option.newInstance()
+      .shortName("-b").shortName(null);
+
+    assertThat(new Option(builder).getShortName(), optionalWithNoValue());
   }
 
   @Test
@@ -70,8 +72,10 @@ class OptionTest {
 
   @Test
   void nullLongName() {
-    assertThrows(IllegalArgumentException.class,
-      () -> Option.newInstance().longName(null));
+    Option.Builder builder = Option.newInstance()
+      .longName("--block").longName(null);
+
+    assertThat(new Option(builder).getLongName(), optionalWithNoValue());
   }
 
   @Test
