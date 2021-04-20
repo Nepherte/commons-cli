@@ -233,6 +233,26 @@ class TemplateTest {
   }
 
   @Test
+  void builder() {
+    Template template = Option.newTemplate()
+      .shortName("b").longName("--block")
+      .required().description("description")
+      .minValues(1).maxValues(2)
+      .valueName("value").build();
+
+    Template copy = template.asBuilder()
+      .valueName("newValueName").build();
+
+    assertThat(copy.getShortName(), is(template.getShortName()));
+    assertThat(copy.getLongName(), is(template.getLongName()));
+    assertThat(copy.isRequired(), is(template.isRequired()));
+    assertThat(copy.getDescription(), is(template.getDescription()));
+    assertThat(copy.getMinValues(), is(template.getMinValues()));
+    assertThat(copy.getMaxValues(), is(template.getMaxValues()));
+    assertThat(copy.getValueName(), optionalWithValue("newValueName"));
+  }
+
+  @Test
   void builderReUsage() {
     Template.Builder builder = Option.newTemplate();
 

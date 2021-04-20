@@ -545,6 +545,15 @@ public final class Option {
     }
 
     /**
+     * Returns a new builder, initialized with a copy of this template.
+     *
+     * @return a new builder, initialized with a copy of this template
+     */
+    public Template.Builder asBuilder() {
+      return new Template.Builder(this);
+    }
+
+    /**
      * Compares templates by their name.
      *
      * @param aTemplate1 the first template
