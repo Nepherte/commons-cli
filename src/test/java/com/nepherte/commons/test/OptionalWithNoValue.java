@@ -37,7 +37,7 @@ final class OptionalWithNoValue<T> extends BaseMatcher<Optional<T>> {
   @Override
   public boolean matches(Object item) {
     Optional<?> optional = (Optional<?>) item;
-    return !optional.isPresent();
+    return optional.isEmpty();
   }
 
   @Override
