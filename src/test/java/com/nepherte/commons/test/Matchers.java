@@ -16,6 +16,7 @@
 package com.nepherte.commons.test;
 
 import com.nepherte.commons.cli.internal.OptionFormat;
+
 import org.hamcrest.Matcher;
 import java.util.Optional;
 
@@ -48,7 +49,16 @@ public final class Matchers {
   }
 
   /**
-   * Matcher that verifies an {@link OptionFormat} has a given set of features.
+   * Matcher that verifies a {@code Command} has an option with a given name.
+   *
+   * @param name the name of the option
+   */
+  public static HasOption hasOption(String name) {
+    return new HasOption(name);
+  }
+
+  /**
+   * Matcher that verifies an {@code OptionFormat} has a given set of features.
    *
    * @param features the expected feature set
    */
