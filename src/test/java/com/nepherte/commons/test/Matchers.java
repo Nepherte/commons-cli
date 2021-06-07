@@ -58,6 +58,15 @@ public final class Matchers {
   }
 
   /**
+   * Matcher that verifies a {@code Command} has a given argument.
+   *
+   * @param argument the argument
+   */
+  public static HasArgument hasArgument(String argument) {
+    return new HasArgument(argument);
+  }
+
+  /**
    * Matcher that verifies an {@code OptionFormat} has a given set of features.
    *
    * @param features the expected feature set
