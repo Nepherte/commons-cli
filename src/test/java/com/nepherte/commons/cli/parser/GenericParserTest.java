@@ -30,9 +30,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.nepherte.commons.cli.internal.OptionFormat.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

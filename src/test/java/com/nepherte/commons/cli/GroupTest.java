@@ -21,9 +21,8 @@ import com.nepherte.commons.cli.Option.Template;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

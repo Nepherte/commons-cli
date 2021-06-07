@@ -20,9 +20,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.collection.IsIterableContainingInOrder.*;
 
 import static com.nepherte.commons.test.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;

@@ -26,12 +26,8 @@ import java.util.Set;
 
 import static com.nepherte.commons.test.Matchers.optionalWithValue;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
-
-import static org.hamcrest.collection.IsEmptyIterable.*;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.*;
-import static org.hamcrest.collection.IsIterableContainingInOrder.*;
+import static org.hamcrest.Matchers.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

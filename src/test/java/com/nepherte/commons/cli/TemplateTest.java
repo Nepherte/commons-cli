@@ -18,9 +18,8 @@ package com.nepherte.commons.cli;
 import com.nepherte.commons.cli.Option.Template;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.number.OrderingComparison.*;
 
 import static com.nepherte.commons.test.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;

@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test that covers {@link Formatter}.
  */
 class FormatterTest {
-//
+
   private static final Charset CHARSET = StandardCharsets.UTF_8;
   private static final String NEW_LINE = System.lineSeparator();
 

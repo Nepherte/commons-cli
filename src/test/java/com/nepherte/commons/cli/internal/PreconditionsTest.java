@@ -18,7 +18,7 @@ package com.nepherte.commons.cli.internal;
 import org.junit.jupiter.api.Test;
 import java.util.function.Predicate;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
 import static com.nepherte.commons.cli.internal.Preconditions.*;
