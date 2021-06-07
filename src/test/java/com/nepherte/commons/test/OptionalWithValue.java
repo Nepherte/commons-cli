@@ -39,8 +39,8 @@ final class OptionalWithValue<T> extends BaseMatcher<Optional<T>> {
   }
 
   @Override
-  public boolean matches(Object item) {
-    Optional<?> optional = (Optional<?>) item;
+  public boolean matches(Object actual) {
+    Optional<?> optional = (Optional<?>) actual;
     return optional.filter(expected::equals).isPresent();
   }
 
