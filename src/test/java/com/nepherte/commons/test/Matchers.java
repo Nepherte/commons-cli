@@ -15,6 +15,7 @@
  */
 package com.nepherte.commons.test;
 
+import com.nepherte.commons.cli.Command;
 import com.nepherte.commons.cli.internal.OptionFormat;
 
 import org.hamcrest.Matcher;
@@ -64,6 +65,20 @@ public final class Matchers {
    */
   public static HasArgument hasArgument(String argument) {
     return new HasArgument(argument);
+  }
+
+  /**
+   * Matcher that verifies a {@code Command} has no arguments.
+   */
+  public static Matcher<Command> hasNoArguments() {
+    return new HasArgumentCount(0);
+  }
+
+  /**
+   * Matcher that verifies a {@code Command} has a given number of arguments.
+   */
+  public static Matcher<Command> hasArgumentCount(int count) {
+    return new HasArgumentCount(count);
   }
 
   /**
