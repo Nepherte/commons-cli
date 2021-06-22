@@ -221,12 +221,14 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.groups(group).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-    Command cmd = parser.parse(new String[]{"-a"});
+    for (String tokens : optionFormat.shortOptionFor("a")) {
+      Parser parser = optionFormat.parserFor(descriptor);
+      Command cmd = parser.parse(tokens.split(" "));
 
-    assertThat(cmd, hasOptionCount(1));
-    assertThat(cmd, hasArgumentCount(0));
-    assertThat(cmd, hasOption("a"));
+      assertThat(cmd, hasOptionCount(1));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("a"));
+    }
   }
 
   @ParameterizedTest @MethodSource(GROUP_OPTION_FORMATS)
@@ -238,11 +240,13 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.groups(g).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-    Command cmd = parser.parse(new String[]{"-a"});
+    for (String tokens : optionFormat.shortOptionFor("a")) {
+      Parser parser = optionFormat.parserFor(descriptor);
+      Command cmd = parser.parse(tokens.split(" "));
 
-    assertThat(cmd, hasOptionCount(1));
-    assertThat(cmd, hasOption("a"));
+      assertThat(cmd, hasOptionCount(1));
+      assertThat(cmd, hasOption("a"));
+    }
   }
 
   @ParameterizedTest @MethodSource(GROUP_OPTION_FORMATS)
@@ -270,10 +274,12 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.groups(g).build();
 
-    assertThrows(ExclusiveOptionsException.class, () -> {
-      Parser parser = optionFormat.parserFor(descriptor);
-      parser.parse(new String[]{"-a", "-b"});
-    });
+    for (String tokens : optionFormat.shortOptionsFor("a", "b")) {
+      assertThrows(ExclusiveOptionsException.class, () -> {
+        Parser parser = optionFormat.parserFor(descriptor);
+        parser.parse(tokens.split(" "));
+      });
+    }
   }
 
   // argument(s)
