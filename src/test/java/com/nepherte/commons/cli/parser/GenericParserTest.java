@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.nepherte.commons.cli.internal.OptionFormat.*;
-import static org.hamcrest.Matchers.*;
+import static com.nepherte.commons.test.Matchers.*;
+
 import static org.hamcrest.MatcherAssert.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,7 +64,9 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.shortOptionFor("a")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.hasOption("a"), is(true));
+      assertThat(cmd, hasOptionCount(1));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("a"));
     }
   }
 
@@ -79,8 +82,10 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.shortOptionsFor("a", "b")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.hasOption("a"), is(true));
-      assertThat(cmd.hasOption("b"), is(true));
+      assertThat(cmd, hasOptionCount(2));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("a"));
+      assertThat(cmd, hasOption("b"));
     }
   }
 
@@ -95,7 +100,9 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.shortOptionFor("a")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.hasOption("a"), is(true));
+      assertThat(cmd, hasOptionCount(1));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("a"));
     }
   }
 
@@ -143,8 +150,9 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.shortOptionFor("a", "1")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.getOptionValue("a"), is("1"));
-      assertThat(cmd.getOptionValues("a"), contains("1"));
+      assertThat(cmd, hasOptionCount(1));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("a").withValue("1"));
     }
   }
 
@@ -178,7 +186,9 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.longOptionFor("enable-a")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.hasOption("enable-a"), is(true));
+      assertThat(cmd, hasOptionCount(1));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("enable-a"));
     }
   }
 
@@ -194,8 +204,10 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.longOptionsFor("enable-a", "enable-b")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.hasOption("enable-a"), is(true));
-      assertThat(cmd.hasOption("enable-b"), is(true));
+      assertThat(cmd, hasOptionCount(2));
+      assertThat(cmd, hasArgumentCount(0));
+      assertThat(cmd, hasOption("enable-a"));
+      assertThat(cmd, hasOption("enable-b"));
     }
   }
 
@@ -212,8 +224,9 @@ class GenericParserTest {
 
     Parser parser = optionFormat.parserFor(descriptor);
     Command cmd = parser.parse(new String[]{"-a"});
-
-    assertThat(cmd.hasOption("a"), is(true));
+    assertThat(cmd, hasOptionCount(1));
+    assertThat(cmd, hasArgumentCount(0));
+    assertThat(cmd, hasOption("a"));
   }
 
   @ParameterizedTest @MethodSource(GROUP_OPTION_FORMATS)
@@ -227,8 +240,8 @@ class GenericParserTest {
 
     Parser parser = optionFormat.parserFor(descriptor);
     Command cmd = parser.parse(new String[]{"-a"});
-
-    assertThat(cmd.hasOption("a"), is(true));
+    assertThat(cmd, hasOptionCount(1));
+    assertThat(cmd, hasOption("a"));
   }
 
   @ParameterizedTest @MethodSource(GROUP_OPTION_FORMATS)
@@ -273,8 +286,9 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.argumentsFor("1")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.argumentCount(), is(1));
-      assertThat(cmd.getArgument(0), is("1"));
+      assertThat(cmd, hasOptionCount(0));
+      assertThat(cmd, hasArgumentCount(1));
+      assertThat(cmd, hasArgument("1"));
     }
   }
 
@@ -287,9 +301,10 @@ class GenericParserTest {
 
     for (String tokens : optionFormat.argumentsFor("1", "2")) {
       Command cmd = parser.parse(tokens.split(" "));
-      assertThat(cmd.argumentCount(), is(2));
-      assertThat(cmd.getArgument(0), is("1"));
-      assertThat(cmd.getArgument(1), is("2"));
+      assertThat(cmd, hasOptionCount(0));
+      assertThat(cmd, hasArgumentCount(2));
+      assertThat(cmd, hasArgument("1").atIndex(0));
+      assertThat(cmd, hasArgument("2").atIndex(1));
     }
   }
 
@@ -341,11 +356,13 @@ class GenericParserTest {
       Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
 
-      assertThat(cmd.hasOption("a"), is(true));
-      assertThat(cmd.hasOption("b"), is(true));
+      assertThat(cmd, hasOptionCount(2));
+      assertThat(cmd, hasOption("a"));
+      assertThat(cmd, hasOption("b"));
 
-      assertThat(cmd.getArgument(0), is("foo"));
-      assertThat(cmd.getArgument(1), is("bar"));
+      assertThat(cmd, hasArgumentCount(2));
+      assertThat(cmd, hasArgument("foo").atIndex(0));
+      assertThat(cmd, hasArgument("bar").atIndex(1));
     }
   }
 
@@ -361,9 +378,9 @@ class GenericParserTest {
     Parser parser = optionFormat.parserFor(descriptor);
     Command cmd = parser.parse(new String[]{"-"});
 
-    assertThat(cmd.hasOption(""), is(false));
-    assertThat(cmd.argumentCount(), is(1));
-    assertThat(cmd.getArgument(0), is("-"));
+    assertThat(cmd, hasOptionCount(0));
+    assertThat(cmd, hasArgumentCount(1));
+    assertThat(cmd, hasArgument("-"));
   }
 
   @ParameterizedTest @MethodSource(ALL_OPTION_FORMATS)
@@ -374,8 +391,8 @@ class GenericParserTest {
     Parser parser = optionFormat.parserFor(descriptor);
     Command cmd = parser.parse(new String[]{"--"});
 
-    assertThat(cmd.hasOption(""), is(false));
-    assertThat(cmd.argumentCount(), is(0));
+    assertThat(cmd, hasNoOptions());
+    assertThat(cmd, hasNoArguments());
   }
 
   // parameterized tests - input data

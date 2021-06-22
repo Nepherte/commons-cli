@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nepherte.commons.test.Matchers.optionalWithValue;
-
+import static com.nepherte.commons.test.Matchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
@@ -55,36 +54,41 @@ class CommandTest {
   @Test
   void shortOption() {
     Option option = mock(Option.class);
+    when(option.getName()).thenReturn("b");
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
 
     Command.Builder builder = Command.newInstance().option(option);
     Command command = new Command(builder);
 
-    assertThat(command.hasOption("b"), is(true));
-    assertThat(command.hasOption("-b"), is(true));
+    assertThat(command, hasOptionCount(1));
+    assertThat(command, hasOption("b"));
+    assertThat(command, hasOption("-b"));
   }
 
   @Test
   void longOption() {
     Option option = mock(Option.class);
+    when(option.getName()).thenReturn("block");
     when(option.getShortName()).thenReturn(Optional.empty());
     when(option.getLongName()).thenReturn(Optional.of("block"));
 
     Command.Builder builder = Command.newInstance().option(option);
     Command command = new Command(builder);
 
-    assertThat(command.hasOption("block"), is(true));
-    assertThat(command.hasOption("--block"), is(true));
+    assertThat(command, hasOption("block"));
+    assertThat(command, hasOption("--block"));
   }
 
   @Test
   void optionIterable() {
     Option o1 = mock(Option.class);
+    when(o1.getName()).thenReturn("a");
     when(o1.getShortName()).thenReturn(Optional.of("a"));
     when(o1.getLongName()).thenReturn(Optional.empty());
 
     Option o2 = mock(Option.class);
+    when(o2.getName()).thenReturn("b");
     when(o2.getShortName()).thenReturn(Optional.of("b"));
     when(o2.getLongName()).thenReturn(Optional.empty());
 
@@ -93,8 +97,9 @@ class CommandTest {
     Command.Builder builder = Command.newInstance().options(options);
     Command command = new Command(builder);
 
-    assertThat(command.hasOption("a"), is(true));
-    assertThat(command.hasOption("b"), is(true));
+    assertThat(command, hasOptionCount(2));
+    assertThat(command, hasOption("a"));
+    assertThat(command, hasOption("b"));
   }
 
   @Test
@@ -106,18 +111,21 @@ class CommandTest {
   @Test
   void optionArray() {
     Option o1 = mock(Option.class);
+    when(o1.getName()).thenReturn("a");
     when(o1.getShortName()).thenReturn(Optional.of("a"));
     when(o1.getLongName()).thenReturn(Optional.empty());
 
     Option o2 = mock(Option.class);
+    when(o2.getName()).thenReturn("b");
     when(o2.getShortName()).thenReturn(Optional.of("b"));
     when(o2.getLongName()).thenReturn(Optional.empty());
 
     Command.Builder builder = Command.newInstance().options(o1, o2);
     Command command = new Command(builder);
 
-    assertThat(command.hasOption("a"), is(true));
-    assertThat(command.hasOption("b"), is(true));
+    assertThat(command, hasOptionCount(2));
+    assertThat(command, hasOption("a"));
+    assertThat(command, hasOption("b"));
   }
 
   @Test
@@ -143,8 +151,8 @@ class CommandTest {
     Command.Builder builder = Command.newInstance().options(o1, o2);
     Command command = new Command(builder);
 
-    assertThat(command.hasOption("a"), is(true));
-    assertThat(command.getOptionValue("a"), is("2"));
+    assertThat(command, hasOptionCount(1));
+    assertThat(command, hasOption("a").withValue("2"));
   }
 
   @Test
@@ -155,18 +163,24 @@ class CommandTest {
     when(option.getValues()).thenReturn(List.of("1"));
 
     Command.Builder builder = Command.newInstance().option(option);
-    assertThat(new Command(builder).getOptionValue("b"), is("1"));
+    Command command = new Command(builder);
+
+    assertThat(command, hasOptionCount(1));
+    assertThat(command, hasOption("b").withValue("1"));
   }
 
   @Test
-  void firstOptionValue() {
+  void optionValues() {
     Option option = mock(Option.class);
     when(option.getShortName()).thenReturn(Optional.of("b"));
     when(option.getLongName()).thenReturn(Optional.empty());
     when(option.getValues()).thenReturn(List.of("1", "2"));
 
     Command.Builder builder = Command.newInstance().option(option);
-    assertThat(new Command(builder).getOptionValue("b"), is("1"));
+    Command command = new Command(builder);
+
+    assertThat(command, hasOptionCount(1));
+    assertThat(command, hasOption("b").withValues("1", "2"));
   }
 
   @Test
@@ -179,15 +193,19 @@ class CommandTest {
   @Test
   void argument() {
     Command.Builder builder = Command.newInstance().argument("arg");
-    assertThat(new Command(builder).argumentCount(), is(1));
-    assertThat(new Command(builder).getArgument(0), is("arg"));
+    Command command = new Command(builder);
+
+    assertThat(command, hasArgumentCount(1));
+    assertThat(command, hasArgument("arg"));
   }
 
   @Test
   void whitespaceArgument() {
     Command.Builder builder = Command.newInstance().argument("  ");
-    assertThat(new Command(builder).argumentCount(), is(1));
-    assertThat(new Command(builder).getArgument(0), is("  "));
+    Command command = new Command(builder);
+
+    assertThat(command, hasArgumentCount(1));
+    assertThat(command, hasArgument("  "));
   }
 
   @Test
@@ -205,10 +223,10 @@ class CommandTest {
     Command.Builder builder = Command.newInstance().arguments(args);
     Command command = new Command(builder);
 
-    assertThat(command.argumentCount(), is(3));
-    assertThat(command.getArgument(0), is("arg1"));
-    assertThat(command.getArgument(1), is("arg2"));
-    assertThat(command.getArgument(2), is("arg3"));
+    assertThat(command, hasArgumentCount(3));
+    assertThat(command, hasArgument("arg1").atIndex(0));
+    assertThat(command, hasArgument("arg2").atIndex(1));
+    assertThat(command, hasArgument("arg3").atIndex(2));
   }
 
   @Test
@@ -224,10 +242,10 @@ class CommandTest {
     Command.Builder builder = Command.newInstance().arguments(args);
     Command command = new Command(builder);
 
-    assertThat(command.argumentCount(), is(3));
-    assertThat(command.getArgument(0), is("arg1"));
-    assertThat(command.getArgument(1), is("arg2"));
-    assertThat(command.getArgument(2), is("arg3"));
+    assertThat(command, hasArgumentCount(3));
+    assertThat(command, hasArgument("arg1").atIndex(0));
+    assertThat(command, hasArgument("arg2").atIndex(1));
+    assertThat(command, hasArgument("arg3").atIndex(2));
   }
 
   @Test
