@@ -59,6 +59,20 @@ public final class Matchers {
   }
 
   /**
+   * Matcher that verifies a {@code Command} has no options.
+   */
+  public static Matcher<Command> hasNoOptions() {
+    return new HasOptionCount(0);
+  }
+
+  /**
+   * Matcher that verifies a {@code Command} has a given number of options.
+   */
+  public static Matcher<Command> hasOptionCount(int count) {
+    return new HasOptionCount(count);
+  }
+
+  /**
    * Matcher that verifies a {@code Command} has a given argument.
    *
    * @param argument the argument

@@ -164,6 +164,15 @@ public final class Command {
   }
 
   /**
+   * Returns the names of all options of this command.
+   *
+   * @return all option names
+   */
+  public List<String> getAllOptionNames() {
+    return options.stream().map(Option::getName).collect(toList());
+  }
+
+  /**
    * Returns a human-readable representation of this command. The format is:
    * {@link #getName name} {@link #hasOption options} {@link #getArgument
    * arguments}.
