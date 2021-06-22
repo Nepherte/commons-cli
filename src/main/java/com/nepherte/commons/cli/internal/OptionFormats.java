@@ -18,9 +18,14 @@ package com.nepherte.commons.cli.internal;
 import com.nepherte.commons.cli.Command;
 import com.nepherte.commons.cli.Parser;
 import com.nepherte.commons.cli.parser.GnuParser;
+import com.nepherte.commons.cli.parser.PosixParser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Class with factory methods for various option formats.
@@ -36,7 +41,7 @@ public final class OptionFormats {
    * @return all supported option format
    */
   public static Stream<OptionFormat> all() {
-    return Stream.of(gnu());
+    return Stream.of(gnu(), posix());
   }
 
   /**
@@ -46,6 +51,15 @@ public final class OptionFormats {
    */
   public static OptionFormat gnu() {
     return new GnuOptionFormat();
+  }
+
+  /**
+   * Returns the Posix-style option format.
+   *
+   * @return the Posix-style option format
+   */
+  public static OptionFormat posix() {
+    return new PosixOptionFormat();
   }
 
   /**
@@ -102,6 +116,65 @@ public final class OptionFormats {
     @Override
     public String toString() {
       return "GNU-style option format [features=" + SUPPORTED_FEATURES + "]";
+    }
+  }
+
+  /**
+   * The Posix-style option format.
+   */
+  private static final class PosixOptionFormat implements OptionFormat {
+
+    private static final int SUPPORTED_FEATURES =
+      ARGUMENT_FEATURE | SHORT_OPTION_FEATURE | GROUP_OPTION_FEATURE;
+
+    @Override
+    public boolean supportsFeatures(int features) {
+      return (SUPPORTED_FEATURES & features) == features;
+    }
+
+    @Override
+    public Parser parserFor(Command.Descriptor descriptor) {
+      return new PosixParser(descriptor);
+    }
+
+    @Override
+    public List<String> shortOptionFor(String name, String... values) {
+      if (values.length > 1) {
+        String errorMessage = "Posix does not support options with values > 1";
+        throw new UnsupportedOperationException(errorMessage);
+      }
+
+      if (values.length == 0) {
+        return List.of("-" + name);
+      }
+
+      return List.of(
+        "-" + name + " " + values[0],
+        "-" + name + values[0]);
+    }
+
+    @Override
+    public List<String> shortOptionsFor(String... names) {
+      List<String> shortOptions = new ArrayList<>(2);
+      shortOptions.addAll(OptionFormat.super.shortOptionsFor(names));
+      shortOptions.add(Arrays.stream(names).collect(joining("", "-", "")));
+      return shortOptions;
+    }
+
+    @Override
+    public List<String> longOptionFor(String name, String... values) {
+      String errorMessage = "Posix does not support long options";
+      throw new UnsupportedOperationException(errorMessage);
+    }
+
+    @Override
+    public List<String> argumentsFor(String... arguments) {
+      return List.of(String.join(" ", arguments));
+    }
+
+    @Override
+    public String toString() {
+      return "Posix-style option format [features=" + SUPPORTED_FEATURES + "]";
     }
   }
 }

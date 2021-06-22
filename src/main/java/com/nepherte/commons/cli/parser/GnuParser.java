@@ -18,7 +18,6 @@ package com.nepherte.commons.cli.parser;
 import com.nepherte.commons.cli.Command;
 import com.nepherte.commons.cli.Option;
 import com.nepherte.commons.cli.Parser;
-
 import com.nepherte.commons.cli.exception.*;
 
 import java.util.ArrayList;
@@ -80,6 +79,15 @@ public final class GnuParser implements Parser {
     finally {
       cleanupParser();
     }
+  }
+
+  /**
+   * Returns the command descriptor used by this parser.
+   *
+   * @return the command descriptor
+   */
+  Command.Descriptor getDescriptor() {
+    return descriptor;
   }
 
   /**
