@@ -60,10 +60,10 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.shortOptionFor("a")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(1));
       assertThat(cmd, hasArgumentCount(0));
       assertThat(cmd, hasOption("a"));
@@ -78,12 +78,13 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a, b).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.shortOptionsFor("a", "b")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(2));
       assertThat(cmd, hasArgumentCount(0));
+
       assertThat(cmd, hasOption("a"));
       assertThat(cmd, hasOption("b"));
     }
@@ -96,10 +97,10 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.shortOptionFor("a")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(1));
       assertThat(cmd, hasArgumentCount(0));
       assertThat(cmd, hasOption("a"));
@@ -113,11 +114,10 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.template(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
-    assertThrows(MissingOptionException.class,
-      () -> parser.parse(new String[0])
-    );
+    assertThrows(MissingOptionException.class, () -> {
+      Parser parser = optionFormat.parserFor(descriptor);
+      parser.parse(new String[0]);
+    });
   }
 
   @ParameterizedTest @MethodSource(SHORT_OPTION_FORMATS)
@@ -127,12 +127,11 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.shortOptionFor("b")) {
-      assertThrows(UnrecognizedTokenException.class,
-        () -> parser.parse(tokens.split(" "))
-      );
+      assertThrows(UnrecognizedTokenException.class, () -> {
+        Parser parser = optionFormat.parserFor(descriptor);
+        parser.parse(tokens.split(" "));
+      });
     }
   }
 
@@ -146,10 +145,10 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.shortOptionFor("a", "1")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(1));
       assertThat(cmd, hasArgumentCount(0));
       assertThat(cmd, hasOption("a").withValue("1"));
@@ -164,12 +163,11 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.shortOptionFor("a")) {
-      assertThrows(MissingValueException.class,
-        () -> parser.parse(tokens.split(" ")))
-      ;
+      assertThrows(MissingValueException.class, () -> {
+        Parser parser = optionFormat.parserFor(descriptor);
+        parser.parse(tokens.split(" "));
+      });
     }
   }
 
@@ -182,10 +180,10 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.longOptionFor("enable-a")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(1));
       assertThat(cmd, hasArgumentCount(0));
       assertThat(cmd, hasOption("enable-a"));
@@ -200,12 +198,13 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.templates(a, b).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.longOptionsFor("enable-a", "enable-b")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(2));
       assertThat(cmd, hasArgumentCount(0));
+
       assertThat(cmd, hasOption("enable-a"));
       assertThat(cmd, hasOption("enable-b"));
     }
@@ -224,6 +223,7 @@ class GenericParserTest {
 
     Parser parser = optionFormat.parserFor(descriptor);
     Command cmd = parser.parse(new String[]{"-a"});
+
     assertThat(cmd, hasOptionCount(1));
     assertThat(cmd, hasArgumentCount(0));
     assertThat(cmd, hasOption("a"));
@@ -240,6 +240,7 @@ class GenericParserTest {
 
     Parser parser = optionFormat.parserFor(descriptor);
     Command cmd = parser.parse(new String[]{"-a"});
+
     assertThat(cmd, hasOptionCount(1));
     assertThat(cmd, hasOption("a"));
   }
@@ -282,10 +283,10 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.maxArgs(1).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.argumentsFor("1")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(0));
       assertThat(cmd, hasArgumentCount(1));
       assertThat(cmd, hasArgument("1"));
@@ -297,12 +298,13 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.maxArgs(2).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.argumentsFor("1", "2")) {
+      Parser parser = optionFormat.parserFor(descriptor);
       Command cmd = parser.parse(tokens.split(" "));
+
       assertThat(cmd, hasOptionCount(0));
       assertThat(cmd, hasArgumentCount(2));
+
       assertThat(cmd, hasArgument("1").atIndex(0));
       assertThat(cmd, hasArgument("2").atIndex(1));
     }
@@ -313,12 +315,11 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.minArgs(3).maxArgs(3).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.argumentsFor("1", "2")) {
-      assertThrows(MissingArgumentException.class, () ->
-        parser.parse(tokens.split(" "))
-      );
+      assertThrows(MissingArgumentException.class, () -> {
+        Parser parser = optionFormat.parserFor(descriptor);
+        parser.parse(tokens.split(" "));
+      });
     }
   }
 
@@ -327,12 +328,11 @@ class GenericParserTest {
     Command.Descriptor.Builder builder = Command.newDescriptor();
     Command.Descriptor descriptor = builder.maxArgs(1).build();
 
-    Parser parser = optionFormat.parserFor(descriptor);
-
     for (String tokens : optionFormat.argumentsFor("foo", "bar")) {
-      assertThrows(TooManyArgumentsException.class, () ->
-        parser.parse(tokens.split(" "))
-      );
+      assertThrows(TooManyArgumentsException.class, () -> {
+        Parser parser = optionFormat.parserFor(descriptor);
+        parser.parse(tokens.split(" "));
+      });
     }
   }
 
