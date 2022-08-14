@@ -53,7 +53,7 @@
     <repository>
       <id>nepherte</id>
       <name>Nepherte Maven Repo</name>
-      <url>https://maven.nepherte.com</url>
+      <url>https://mvn.nepherte.com/releases</url>
     </repository>
   </distributionManagement>
 

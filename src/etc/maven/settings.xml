@@ -10,6 +10,7 @@
         <!-- Maven Central. -->
         <repository>
           <id>central</id>
+          <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2</url>
           <releases><enabled>true</enabled></releases>
           <snapshots><enabled>true</enabled></snapshots>
@@ -17,8 +18,10 @@
         <!-- Nepherte Releases. -->
         <repository>
           <id>nepherte</id>
-          <name>Nepherte Maven Repo</name>
-          <url>https://maven.nepherte.com/releases</url>
+          <name>Nepherte Central (Releases)</name>
+          <url>https://mvn.nepherte.com/releases</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
         </repository>
       </repositories>
     </profile>
@@ -26,7 +29,7 @@
 
   <servers>
     <server>
-      <id>github</id>
+      <id>nepherte</id>
       <username>travis</username>
       <password>${env.REPO_TOKEN}</password>
     </server>
