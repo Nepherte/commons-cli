@@ -28,6 +28,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.nepherte.commons.cli.internal.Preconditions.requireArg;
+import static com.nepherte.commons.cli.internal.Predicates.notNull;
+
 /**
  * <p>Parser that supports the {@code GNU}-style option format:
  *
@@ -62,7 +65,7 @@ public final class GnuParser implements Parser {
    * @param descriptor the command descriptor
    */
   public GnuParser(Command.Descriptor descriptor) {
-    this.descriptor = descriptor;
+    this.descriptor = requireArg(descriptor, notNull(), "Descriptor is [%s]" );
 
     missingGroups = new ArrayList<>();
     missingTemplates = new ArrayList<>();
