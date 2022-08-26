@@ -15,13 +15,21 @@
           <releases><enabled>true</enabled></releases>
           <snapshots><enabled>true</enabled></snapshots>
         </repository>
-        <!-- Nepherte Releases. -->
+        <!--Nepherte Central (Releases)-->
         <repository>
-          <id>nepherte</id>
+          <id>nepherte-releases</id>
           <name>Nepherte Central (Releases)</name>
           <url>https://mvn.nepherte.com/releases</url>
           <releases><enabled>true</enabled></releases>
           <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <!--Nepherte Central (Snapshots)-->
+        <repository>
+          <id>nepherte-snapshots</id>
+          <name>Nepherte Central (Snapshots)</name>
+          <url>https://mvn.nepherte.com/snapshots</url>
+          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
         </repository>
       </repositories>
     </profile>
@@ -29,7 +37,12 @@
 
   <servers>
     <server>
-      <id>nepherte</id>
+      <id>nepherte-releases</id>
+      <username>travis</username>
+      <password>${env.REPO_TOKEN}</password>
+    </server>
+    <server>
+      <id>nepherte-snapshots</id>
       <username>travis</username>
       <password>${env.REPO_TOKEN}</password>
     </server>

@@ -51,10 +51,15 @@
   <!-- Distribution Management. -->
   <distributionManagement>
     <repository>
-      <id>nepherte</id>
-      <name>Nepherte Maven Repo</name>
+      <id>nepherte-releases</id>
+      <name>Nepherte Central (Releases)</name>
       <url>https://mvn.nepherte.com/releases</url>
     </repository>
+    <snapshotRepository>
+      <id>nepherte-snapshots</id>
+      <name>Nepherte Central (Snapshots)</name>
+      <url>https://mvn.nepherte.com/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <properties>
