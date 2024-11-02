@@ -4,3 +4,6 @@
 
 # Output
 target/
+
+# macOS
+**/.DS_Store
