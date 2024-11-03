@@ -1,5 +1,5 @@
 [![GitHub Version](https://img.shields.io/github/tag/Nepherte/commons-cli.svg?label=latest)](https://github.com/Nepherte/commons-cli/releases/latest)
-[![Build Status](https://img.shields.io/travis/com/Nepherte/commons-cli/develop.svg)](https://travis-ci.com/Nepherte/commons-cli)
+[![Build Status](https://github.com/Nepherte/commons-cli/actions/workflows/unit%20tests.yml/badge.svg?branch=develop)](https://github.com/Nepherte/commons-cli/actions/workflows/unit%20tests.yml)
 [![Codecov Branch](https://img.shields.io/codecov/c/github/Nepherte/commons-cli/develop?color=red)](https://codecov.io/gh/Nepherte/commons-cli)
 
 **commons-cli** is a Java library to parse options and arguments passed to a 
