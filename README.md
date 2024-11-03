@@ -8,9 +8,11 @@ statements, detailing the interface that is available to the user.
 
 The latest version is **1.0.0**, released on **March 8, 2020**:
 
-- [commons-cli-1.0.0.jar](https://github.com/Nepherte/commons-cli/releases/download/1.0.0/commons-cli-1.0.0.jar)
-- [commons-cli-1.0.0-javadoc.jar](https://github.com/Nepherte/commons-cli/releases/download/1.0.0/commons-cli-1.0.0-javadoc.jar)
-- [commons-cli-1.0.0-sources.jar](https://github.com/Nepherte/commons-cli/releases/download/1.0.0/commons-cli-1.0.0-sources.jar)
+- [commons-cli-1.0.0.jar](https://mvn.nepherte.com/releases/com/nepherte/commons-cli/1.0.0/commons-cli-1.0.0.jar)
+- [commons-cli-1.0.0-javadoc.jar](https://mvn.nepherte.com/releases/com/nepherte/commons-cli/1.0.0/commons-cli-1.0.0-javadoc.jar)
+- [commons-cli-1.0.0-sources.jar](https://mvn.nepherte.com/releases/com/nepherte/commons-cli/1.0.0/commons-cli-1.0.0-sources.jar)
+
+The latest copy of the javadoc can be consulted online [here](https://mvn.nepherte.com/javadoc/releases/com/nepherte/commons-cli/1.0.0).
 
 Formats
 -------
