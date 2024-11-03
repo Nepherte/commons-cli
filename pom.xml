@@ -45,7 +45,7 @@
   <!-- Continuous Integration. -->
   <ciManagement>
     <system>Travis CI</system>
-    <url>https://travis-ci.com/Nepherte/commons-cli</url>
+    <url>https://github.com/Nepherte/commons-cli/actions</url>
   </ciManagement>
 
   <!-- Distribution Management. -->
