@@ -1,0 +1,43 @@
+<settings>
+  <servers>
+    <server>
+      <id>nepherte-central</id>
+      <username>${env.REPOSILITE_TOKEN}</username>
+      <password>${env.REPOSILITE_SECRET}</password>
+    </server>
+    <server>
+      <id>nepherte-releases</id>
+      <username>${env.REPOSILITE_TOKEN}</username>
+      <password>${env.REPOSILITE_SECRET}</password>
+    </server>
+  </servers>
+
+  <profiles>
+    <profile>
+      <id>nepherte</id>
+      <repositories>
+        <repository>
+          <id>nepherte-central</id>
+          <name>Nepherte Central</name>
+          <url>https://mvn.nepherte.com/central</url>
+        </repository>
+        <repository>
+          <id>nepherte-releases</id>
+          <name>Nepherte Releases</name>
+          <url>https://mvn.nepherte.com/releases</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nepherte-central</id>
+          <name>Nepherte Central</name>
+          <url>https://mvn.nepherte.com/central</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>nepherte</activeProfile>
+  </activeProfiles>
+</settings>

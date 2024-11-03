@@ -1,0 +1,39 @@
+name: Deploy Jar
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          cache: maven
+          overwrite-settings: false
+          distribution: 'liberica'
+          java-version-file: '.java-version'
+
+      - name: Run Unit Tests
+        run: .github/scripts/run-tests.sh
+        env:
+          REPOSILITE_TOKEN: ${{ secrets.REPOSILITE_TOKEN }}
+          REPOSILITE_SECRET: ${{ secrets.REPOSILITE_SECRET }}
+
+      - name: Deploy Jar
+        run: .github/scripts/deploy-artifacts.sh
+        env:
+          REPOSILITE_TOKEN: ${{ secrets.REPOSILITE_TOKEN }}
+          REPOSILITE_SECRET: ${{ secrets.REPOSILITE_SECRET }}

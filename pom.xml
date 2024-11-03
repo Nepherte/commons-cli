@@ -55,11 +55,6 @@
       <name>Nepherte Central (Releases)</name>
       <url>https://mvn.nepherte.com/releases</url>
     </repository>
-    <snapshotRepository>
-      <id>nepherte-snapshots</id>
-      <name>Nepherte Central (Snapshots)</name>
-      <url>https://mvn.nepherte.com/snapshots</url>
-    </snapshotRepository>
   </distributionManagement>
 
   <properties>
