@@ -719,7 +719,7 @@ public final class Option {
           "Template has neither a short name nor a long name"
         );
         requireState(minValues, not(greaterThan(maxValues)), format(
-          "Min values [%%d] greater than max values [%d]", maxValues)
+          "Min values [%d] greater than max values [%d]", minValues, maxValues)
         );
         return new Template(this);
       }

@@ -759,7 +759,7 @@ public final class Command {
        */
       public Descriptor build() {
         requireState(minArgs, not(greaterThan(maxArgs)), format(
-          "Min args [%%d] greater than max args [%d]", maxArgs)
+          "Min args [%d] greater than max args [%d]", minArgs, maxArgs)
         );
         return new Descriptor(this);
       }
