@@ -22,8 +22,6 @@ import com.nepherte.commons.cli.Option;
  */
 public final class MissingGroupException extends ParseException {
 
-  private static final long serialVersionUID = 4611455865956293357L;
-
   /**
    * Creates a new {@code MissingGroupException}.
    *

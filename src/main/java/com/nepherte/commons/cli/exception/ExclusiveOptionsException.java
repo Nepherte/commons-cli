@@ -24,8 +24,6 @@ import java.util.Arrays;
  */
 public final class ExclusiveOptionsException extends ParseException {
 
-  private static final long serialVersionUID = 356042360910950845L;
-
   /**
    * Creates a new {@code ExclusiveOptionsException}.
    *

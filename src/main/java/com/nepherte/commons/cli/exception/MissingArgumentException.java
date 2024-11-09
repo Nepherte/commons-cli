@@ -20,8 +20,6 @@ package com.nepherte.commons.cli.exception;
  */
 public final class MissingArgumentException extends ParseException {
 
-  private static final long serialVersionUID = 6038171462219781253L;
-
   /**
    * Creates a new {@code MissingArgumentException}.
    *

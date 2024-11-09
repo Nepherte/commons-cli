@@ -20,8 +20,6 @@ package com.nepherte.commons.cli.exception;
  */
 public final class TooManyArgumentsException extends ParseException {
 
-  private static final long serialVersionUID = -7644793293717786265L;
-
   /**
    * Creates a new {@code TooManyArgumentsException}.
    *

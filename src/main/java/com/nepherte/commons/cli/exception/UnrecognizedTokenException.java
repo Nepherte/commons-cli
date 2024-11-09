@@ -20,8 +20,6 @@ package com.nepherte.commons.cli.exception;
  */
 public final class UnrecognizedTokenException extends ParseException {
 
-  private static final long serialVersionUID = 2418916161039553401L;
-
   /**
    * Creates a new {@code UnrecognizedTokenException}.
    *

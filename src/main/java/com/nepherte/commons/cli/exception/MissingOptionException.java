@@ -22,8 +22,6 @@ import com.nepherte.commons.cli.Option;
  */
 public final class MissingOptionException extends ParseException {
 
-  private static final long serialVersionUID = -750674298160485010L;
-
   /**
    * Creates a new {@code MissingOptionException}.
    *

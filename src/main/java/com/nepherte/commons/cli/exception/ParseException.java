@@ -20,8 +20,6 @@ package com.nepherte.commons.cli.exception;
  */
 public class ParseException extends Exception {
 
-  private static final long serialVersionUID = 2624991404609831294L;
-
   /**
    * Creates a new {@code Exception}.
    *

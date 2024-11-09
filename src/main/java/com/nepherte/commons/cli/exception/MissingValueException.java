@@ -22,8 +22,6 @@ import com.nepherte.commons.cli.Option;
  */
 public final class MissingValueException extends ParseException {
 
-  private static final long serialVersionUID = -718092007041448691L;
-
   /**
    * Creates a new {@code MissingValueException}.
    *

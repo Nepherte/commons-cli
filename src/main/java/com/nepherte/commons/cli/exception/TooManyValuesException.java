@@ -22,8 +22,6 @@ import com.nepherte.commons.cli.Option;
  */
 public final class TooManyValuesException extends ParseException {
 
-  private static final long serialVersionUID = -1451812468054340266L;
-
   /**
    * Creates a new {@code TooManyValuesException}.
    *
