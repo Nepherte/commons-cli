@@ -18,12 +18,12 @@ package com.nepherte.commons.cli.internal;
 import com.nepherte.commons.cli.Command;
 import com.nepherte.commons.cli.Parser;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
+
+import static java.util.Arrays.*;
+import static java.util.stream.Collectors.*;
 
 /**
  * An option format.
@@ -80,17 +80,18 @@ public interface OptionFormat {
    * @see #shortOptionFor(String, String...)
    */
   default List<String> shortOptionsFor(String... names) {
-    if (names == null || names.length == 0) {
-      return Collections.emptyList();
+    if (names.length == 0) {
+      return List.of();
     }
 
     return List.of(
-      Arrays.stream(names).map(this::shortOptionFor)
+      stream(names)
+        .map(this::shortOptionFor)
         // always pick the first short option variant
         .map(variants -> variants.stream().findFirst())
         .filter(Optional::isPresent).map(Optional::get)
         // join the short options together in a string
-        .collect(Collectors.joining(" "))
+        .collect(joining(" "))
     );
   }
 
@@ -117,17 +118,18 @@ public interface OptionFormat {
    * @see #longOptionFor(String, String...)
    */
   default List<String> longOptionsFor(String... names) {
-    if (names == null || names.length == 0) {
-      return Collections.emptyList();
+    if (names.length == 0) {
+      return List.of();
     }
 
     return List.of(
-      Arrays.stream(names).map(this::longOptionFor)
+      stream(names)
+        .map(this::longOptionFor)
         // always pick the first long option variant
         .map(variants -> variants.stream().findFirst())
         .filter(Optional::isPresent).map(Optional::get)
         // join the long options together in a string
-        .collect(Collectors.joining(" "))
+        .collect(joining(" "))
     );
   }
 
@@ -158,30 +160,30 @@ public interface OptionFormat {
   default List<String> optionsAndArgsFor(String[] shortNames,
   String[] longNames, String[] argumentTokens) {
 
-    List<String> shortOptions = shortOptionsFor(shortNames);
-    List<String> longOptions = longOptionsFor(longNames);
-    List<String> arguments = argumentsFor(argumentTokens);
+    var shortOptions = shortOptionsFor(shortNames);
+    var longOptions = longOptionsFor(longNames);
+    var arguments = argumentsFor(argumentTokens);
 
-    Optional<String> firstShortOptions = shortOptions.stream().findFirst();
-    Optional<String> firstLongOptions = longOptions.stream().findFirst();
-    Optional<String> firstArguments = arguments.stream().findFirst();
+    var firstShortOptions = shortOptions.stream().findFirst();
+    var firstLongOptions = longOptions.stream().findFirst();
+    var firstArguments = arguments.stream().findFirst();
 
-    boolean noShortOptions = firstShortOptions.isEmpty();
-    boolean noLongOptions = firstLongOptions.isEmpty();
-    boolean noArguments = firstArguments.isEmpty();
+    var noShortOptions = firstShortOptions.isEmpty();
+    var noLongOptions = firstLongOptions.isEmpty();
+    var noArguments = firstArguments.isEmpty();
 
     if (noShortOptions && noLongOptions && noArguments) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     if (noShortOptions && noLongOptions) {
       return List.of(firstArguments.get());
     }
 
-    StringJoiner optionJoiner = new StringJoiner(" ");
+    var optionJoiner = new StringJoiner(" ");
     firstShortOptions.ifPresent(optionJoiner::add);
     firstLongOptions.ifPresent(optionJoiner::add);
-    String formattedOptions = optionJoiner.toString();
+    var formattedOptions = optionJoiner.toString();
 
     if (noArguments) {
       return List.of(formattedOptions);

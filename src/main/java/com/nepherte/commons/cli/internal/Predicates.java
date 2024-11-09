@@ -140,7 +140,7 @@ public final class Predicates {
    * @return a new predicate that tests for strings with no spaces
    */
   public static Predicate<String> noSpace() {
-    return not(Strings::containsWhitespace);
+    return not(Strings::hasSpace);
   }
 
   /**

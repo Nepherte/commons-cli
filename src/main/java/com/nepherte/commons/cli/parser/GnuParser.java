@@ -21,15 +21,13 @@ import com.nepherte.commons.cli.Parser;
 import com.nepherte.commons.cli.exception.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Optional;
 
-import static com.nepherte.commons.cli.internal.Preconditions.requireArg;
-import static com.nepherte.commons.cli.internal.Predicates.notNull;
+import static com.nepherte.commons.cli.internal.Preconditions.*;
+import static com.nepherte.commons.cli.internal.Predicates.*;
 
 /**
  * <p>Parser that supports the {@code GNU}-style option format:
@@ -74,13 +72,15 @@ public final class GnuParser implements Parser {
 
   @Override
   public Command parse(String[] tokens) throws ParseException {
-    initParser();
+    init();
 
     try {
-      return parseTokens(tokens);
+      return parse(
+        List.of(tokens)
+      );
     }
     finally {
-      cleanupParser();
+      cleanup();
     }
   }
 
@@ -110,14 +110,13 @@ public final class GnuParser implements Parser {
    * @return the parsed command line
    * @throws ParseException the parser encounters an issue
    */
-  private Command parseTokens(String[] tokens) throws ParseException {
+  private Command parse(List<String> tokens) throws ParseException {
     // Convert tokens to more convenient iterator.
-    List<String> tokenList = Arrays.asList(tokens);
-    ListIterator<String> tokenIt = tokenList.listIterator();
+    var tokenIterator = tokens.listIterator();
 
     // Do the actual parsing.
-    parseOptions(tokenIt);
-    parseArguments(tokenIt);
+    parseOptions(tokenIterator);
+    parseArguments(tokenIterator);
 
     // Return the parsed command.
     return builder.build();
@@ -144,7 +143,7 @@ public final class GnuParser implements Parser {
 
     // Iterate until no more options.
     while (tokens.hasNext()) {
-      String token = tokens.next();
+      var token = tokens.next();
 
       // A single dash is an argument.
       if (token.equals("-")) {
@@ -156,26 +155,25 @@ public final class GnuParser implements Parser {
         return;
       }
 
-      // The token looks like an option.
-      if (token.startsWith("-")) {
-        parseOption(token);
-      }
       // The token is an argument.
-      else {
+      if (!token.startsWith("-")) {
         tokens.previous();
         return;
       }
+
+      // The token looks like an option.
+      parseOption(token);
     }
 
     // Check for missing options.
     if (!missingTemplates.isEmpty()) {
-      Option.Template template = missingTemplates.get(0);
+      var template = missingTemplates.getFirst();
       throw new MissingOptionException(template);
     }
 
     // Check for missing groups.
     if (!missingGroups.isEmpty()) {
-      Option.Group group = missingGroups.get(0);
+      var group = missingGroups.getFirst();
       throw new MissingGroupException(group);
     }
   }
@@ -189,7 +187,7 @@ public final class GnuParser implements Parser {
    */
   private void parseOption(String token) throws ParseException {
     // Split on option-value separator.
-    String[] split = token.split("=");
+    var split = token.split("=");
 
     // Determine the option and values.
     String option;
@@ -225,7 +223,7 @@ public final class GnuParser implements Parser {
   throws ParseException {
 
     // Lookup template.
-    Option.Template template = searchTemplate(option);
+    var template = searchTemplate(option);
 
     if (template == null) {
       // Token does not match a template in the descriptor.
@@ -233,8 +231,8 @@ public final class GnuParser implements Parser {
     }
 
     // Take a copy of the template.
-    Option.Builder optionBuilder = Option.newInstance(template);
-    Option.Group group = descriptor.getGroup(template).orElse(null);
+    var optionBuilder = Option.newInstance(template);
+    var group = descriptor.getGroup(template).orElse(null);
 
     // The template is no longer missing.
     if (template.isRequired()) {
@@ -248,7 +246,8 @@ public final class GnuParser implements Parser {
       }
 
       // A different option already provided.
-      Option.Template selected = selectedTemplates.get(group);
+      var selected = selectedTemplates.get(group);
+
       if (selected != null && selected != template) {
         throw new ExclusiveOptionsException(selected, template);
       }
@@ -261,8 +260,7 @@ public final class GnuParser implements Parser {
     parseValues(optionBuilder, template, values);
 
     // Build option and add to command.
-    Option parsedOption = optionBuilder.build();
-    builder.option(parsedOption);
+    builder.option(optionBuilder.build());
   }
 
   /**
@@ -282,9 +280,9 @@ public final class GnuParser implements Parser {
   private static void parseValues(Option.Builder builder, Option.Template
   template, String[] values) throws ParseException {
 
-    int valueCount = values.length;
-    int minValues = template.getMinValues();
-    int maxValues = template.getMaxValues();
+    var valueCount = values.length;
+    var minValues = template.getMinValues();
+    var maxValues = template.getMaxValues();
 
     // Check too few values.
     if (valueCount < minValues) {
@@ -315,11 +313,11 @@ public final class GnuParser implements Parser {
   throws ParseException {
 
     // Keep track of the number of arguments.
-    int argumentCount = 0;
+    var argumentCount = 0;
 
     // Loop until the end of the list.
     while (tokens.hasNext()) {
-      String token = tokens.next();
+      var token = tokens.next();
 
       // Ignore first double dash.
       if (!token.equals("--") || argumentCount != 0) {
@@ -328,9 +326,9 @@ public final class GnuParser implements Parser {
       }
     }
 
-    // Check for missing arguments.
-    String commandName = descriptor.getName().orElse("<undefined>");
+    var commandName = descriptor.getName().orElse("<undefined>");
 
+    // Check for missing arguments.
     if (argumentCount < descriptor.getMinArgs()) {
       throw new MissingArgumentException(commandName);
     }
@@ -351,13 +349,13 @@ public final class GnuParser implements Parser {
   private Option.Template searchTemplate(String token) {
     // Check for the long name.
     if (token.startsWith("--")) {
-      String optionName = token.substring(2);
+      var optionName = token.substring(2);
       return descriptor.getLongTemplate(optionName).orElse(null);
     }
 
     // Check for the short name.
     if (token.startsWith("-")) {
-      String optionName = token.substring(1);
+      var optionName = token.substring(1);
       return descriptor.getShortTemplate(optionName).orElse(null);
     }
 
@@ -368,11 +366,11 @@ public final class GnuParser implements Parser {
   /**
    * Initializes this parser with the descriptor.
    */
-  private void initParser() {
+  private void init() {
     // Initialize command builder.
     builder = Command.newInstance();
 
-    Optional<String> name = descriptor.getName();
+    var name = descriptor.getName();
     name.ifPresent(builder::name);
 
     // Initialize missing templates and groups.
@@ -383,7 +381,7 @@ public final class GnuParser implements Parser {
   /**
    * Cleans up the state of the parser.
    */
-  private void cleanupParser() {
+  private void cleanup() {
     // Destroy command builder.
     builder = null;
 

@@ -15,22 +15,20 @@
  */
 package com.nepherte.commons.cli;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.nepherte.commons.cli.internal.Preconditions.*;
 import static com.nepherte.commons.cli.internal.Predicates.*;
 
-import static java.lang.String.format;
-import static java.util.Arrays.stream;
+import static java.lang.String.*;
+import static java.util.Arrays.*;
+import static java.util.stream.Collectors.*;
 
 /**
  * <p>An <em>immutable</em> option that modifies the behavior of a {@code
@@ -105,7 +103,7 @@ public final class Option {
   Option(Builder builder) {
     shortName = builder.shortName;
     longName = builder.longName;
-    values = new ArrayList<>(builder.values);
+    values = List.copyOf(builder.values);
   }
 
   /**
@@ -149,7 +147,8 @@ public final class Option {
       return Optional.empty();
     }
 
-    return Optional.of(values.get(0));
+    var firstValue = values.getFirst();
+    return Optional.of(firstValue);
   }
 
   /**
@@ -158,7 +157,7 @@ public final class Option {
    * @return the values of this option as an immutable list
    */
   public List<String> getValues() {
-    return Collections.unmodifiableList(values);
+    return values;
   }
 
   /**
@@ -307,27 +306,26 @@ public final class Option {
      */
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
+      var result = new StringBuilder();
 
       // Include the name.
       if (shortName != null) {
-        builder.append("-").append(shortName);
+        result.append("-").append(shortName);
       }
       else if (longName != null) {
-        builder.append("--").append(longName);
+        result.append("--").append(longName);
       }
       else {
-        builder.append("-").append("<undefined>");
+        result.append("-").append("<undefined>");
       }
 
       // Include the values.
       if (!values.isEmpty()) {
-        StringJoiner joiner = new StringJoiner(",");
-        values.forEach(joiner::add);
-        builder.append('=').append(joiner);
+        var csv = join(",", values);
+        result.append('=').append(csv);
       }
 
-      return builder.toString();
+      return result.toString();
     }
 
     /**
@@ -372,8 +370,8 @@ public final class Option {
     requireArg(name, noSpace(), "The name [%s] has a space");
 
    // Remove leading hyphens from the name.
-    Matcher matcher = NAME_PREFIX_PATTERN.matcher(name);
-    String stripped = matcher.replaceFirst("");
+    var matcher = NAME_PREFIX_PATTERN.matcher(name);
+    var stripped = matcher.replaceFirst("");
 
     // The name without hyphens cannot be empty.
     requireArg(stripped, notEmpty(), "The name [%s] is empty");
@@ -556,15 +554,15 @@ public final class Option {
     /**
      * Compares templates by their name.
      *
-     * @param aTemplate1 the first template
-     * @param aTemplate2 the second template
+     * @param template1 the first template
+     * @param template2 the second template
      * @return see {@link Comparable#compareTo}
      * @throws IllegalArgumentException a template is {@code null}
      */
-    static int byName(Template aTemplate1, Template aTemplate2) {
-      requireArg(aTemplate1, notNull(), "The first template is [%s]");
-      requireArg(aTemplate2, notNull(), "The second template is [%s]");
-      return aTemplate1.getName().compareTo(aTemplate2.getName());
+    static int byName(Template template1, Template template2) {
+      requireArg(template1, notNull(), "The first template is [%s]");
+      requireArg(template2, notNull(), "The second template is [%s]");
+      return template1.getName().compareTo(template2.getName());
     }
 
     /**
@@ -729,42 +727,42 @@ public final class Option {
        */
       @Override
       public String toString() {
-        StringBuilder builder = new StringBuilder();
+        var result = new StringBuilder();
 
         // Include the name.
         if (shortName != null) {
-          builder.append("-").append(shortName);
+          result.append("-").append(shortName);
         }
         else if (longName != null) {
-          builder.append("--").append(longName);
+          result.append("--").append(longName);
         }
         else {
-          builder.append("-").append("<undefined>");
+          result.append("-").append("<undefined>");
         }
 
-        boolean canHaveValues = maxValues != 0;
-        boolean valuesOptional = minValues == 0;
+        var canHaveValues = maxValues != 0;
+        var valuesOptional = minValues == 0;
 
         // Include value name if applicable.
         if (canHaveValues) {
-          builder.append("=");
+          result.append("=");
 
           // Surround optional values with [].
           if (valuesOptional) {
-            builder.append("[");
+            result.append("[");
           }
 
-          builder.append("<");
-          builder.append(valueName == null ? "value" : valueName);
-          builder.append(">");
+          result.append("<");
+          result.append(valueName == null ? "value" : valueName);
+          result.append(">");
 
           // Surround optional values with [].
           if (valuesOptional) {
-            builder.append("]");
+            result.append("]");
           }
         }
 
-        return builder.toString();
+        return result.toString();
       }
 
       /**
@@ -813,7 +811,7 @@ public final class Option {
      */
     Group(Builder builder) {
       this.required = builder.required;
-      this.templates = new HashSet<>(builder.templates);
+      this.templates = Set.copyOf(builder.templates);
     }
 
     /**
@@ -831,7 +829,7 @@ public final class Option {
      * @return the templates in this group as an immutable set
      */
     public Set<Template> getTemplates() {
-      return Collections.unmodifiableSet(templates);
+      return templates;
     }
 
     /**
@@ -863,7 +861,7 @@ public final class Option {
        * Creates a new, uninitialized builder.
        */
       Builder() {
-        templates = new HashSet<>();
+        templates = new HashSet<>(10);
       }
 
       /**
@@ -935,14 +933,10 @@ public final class Option {
        */
       @Override
       public String toString() {
-        StringJoiner joiner = new StringJoiner(",", "[", "]");
-
-        templates.stream()
+        return templates.stream()
           .sorted(Template::byName)
           .map(Object::toString)
-          .forEach(joiner::add);
-
-        return joiner.toString();
+          .collect(joining(",", "[", "]"));
       }
 
       /**

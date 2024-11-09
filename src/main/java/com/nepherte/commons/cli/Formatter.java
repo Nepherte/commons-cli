@@ -17,19 +17,17 @@ package com.nepherte.commons.cli;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.nepherte.commons.cli.internal.Preconditions.*;
 import static com.nepherte.commons.cli.internal.Predicates.*;
 import static com.nepherte.commons.cli.internal.Strings.*;
+import static java.util.stream.Collectors.*;
 
 /**
  * A command-line formatter for help messages and usage statements.
@@ -261,120 +259,122 @@ public final class Formatter {
   public void printHelp(Command.Descriptor descriptor, String syntax,
   String header, String footer) {
 
-    try (PrintWriter pw = createDefaultPrintWriter()) {
-      printHelp(pw, descriptor, syntax, header, footer);
+    try (var writer = createDefaultPrintWriter()) {
+      printHelp(writer, descriptor, syntax, header, footer);
     }
   }
 
   /**
    * Prints the help message of a command to the given print writer.
    *
-   * @param pw the writer to print the help message
+   * @param writer the writer to print the help message
    * @param descriptor the command descriptor to print
    * @param syntax the syntax for the command, {@code null} to auto-generate
    * @param header the message to display at the start, {@code null} to disable
    * @param footer the message to display at the end, {@code null} to disable
    */
-  public void printHelp(PrintWriter pw, Command.Descriptor descriptor,
+  public void printHelp(PrintWriter writer, Command.Descriptor descriptor,
   String syntax, String header, String footer) {
 
     if (isNullOrBlank(syntax)) {
       // Auto-generated command syntax.
-      printUsage(pw, descriptor);
+      printUsage(writer, descriptor);
     }
     else {
       // User-provided command syntax.
-      printUsage(pw, syntax);
+      printUsage(writer, syntax);
     }
 
     // Print header, if present.
     if (!isNullOrBlank(header)) {
-      pw.println(header.strip());
+      writer.println(header.strip());
     }
 
     // Print options.
     if (!descriptor.getTemplates().isEmpty()) {
-      pw.append(System.lineSeparator());
-      printOptions(pw, descriptor);
+      writer.append(System.lineSeparator());
+      printOptions(writer, descriptor);
     }
 
     // Print footer, if present.
     if (!isNullOrBlank(footer)) {
       // Additional options - footer separator.
       if (!descriptor.getTemplates().isEmpty()) {
-        pw.append(System.lineSeparator());
+        writer.append(System.lineSeparator());
       }
-      pw.println(footer.strip());
+      writer.println(footer.strip());
     }
   }
 
   /**
    * Prints the usage statement of a command.
    *
-   * @param pw the writer to print the usage statement
+   * @param writer the writer to print the usage statement
    * @param descriptor the command descriptor to print
    */
-  public void printUsage(PrintWriter pw, Command.Descriptor descriptor) {
-    StringBuilder builder = new StringBuilder();
+  public void printUsage(PrintWriter writer, Command.Descriptor descriptor) {
+    var usage = new StringBuilder();
 
     // Print usage prefix (never null).
     if (!isNullOrEmpty(usagePrefix)) {
-      builder.append(usagePrefix).append(' ');
+      usage.append(usagePrefix).append(' ');
     }
 
     // Print command name.
-    String name = descriptor.getName().orElse("cmd");
+    var cmdName = descriptor.getName().orElse("cmd");
 
-    if (!isNullOrEmpty(name)) {
-      builder.append(name);
+    if (!isNullOrEmpty(cmdName)) {
+      usage.append(cmdName);
     }
 
     // Append each option to the usage statement.
-    Set<Option.Template> templates = descriptor.getTemplates();
+    var templates = descriptor.getTemplates();
 
     if (!templates.isEmpty()) {
-      builder.append(' ').append(templates
-        .stream().sorted(optionComparator)
-        .map(this::renderOptionUsage)
-        .collect(Collectors.joining(" ")));
+      usage.append(' ').append(
+        templates.stream()
+          .sorted(optionComparator)
+          .map(this::renderOptionUsage)
+          .collect(joining(" "))
+      );
     }
 
     // Append argument name (never null) to the usage statement.
     if (descriptor.canHaveArgs() && !argumentName.isEmpty()) {
-      StringBuilder argBuilder = new StringBuilder(argumentName);
+      var arguments = new StringBuilder(argumentName);
 
       if (!descriptor.requiresArgs()) {
-        argBuilder.insert(0, '[');
-        argBuilder.append(']');
+        arguments.insert(0, '[');
+        arguments.append(']');
       }
 
-      builder.append(' ').append(argBuilder);
+      usage.append(' ').append(arguments);
     }
 
     // Print the usage statement.
-    pw.println(builder);
+    writer.println(usage);
   }
 
   /**
    * Prints the usage statement of a command.
    *
-   * @param pw the writer to print the usage statement
+   * @param writer the writer to print the usage statement
    * @param syntax the usage statement to print
    */
-  public void printUsage(PrintWriter pw, String syntax) {
-    pw.println(usagePrefix + ' ' + syntax.strip());
+  public void printUsage(PrintWriter writer, String syntax) {
+    writer.println(usagePrefix + ' ' + syntax.strip());
   }
 
   /**
    * Prints the option names, values and descriptions.
    *
-   * @param pw the print writer to print the options
+   * @param writer the print writer to print the options
    * @param descriptor the command descriptor
    */
-  void printOptions(PrintWriter pw, Command.Descriptor descriptor) {
-    StringBuilder builder = new StringBuilder();
+  void printOptions(PrintWriter writer, Command.Descriptor descriptor) {
+    var builder = new StringBuilder();
     renderOptions(builder, descriptor.getTemplates());
-    pw.println(builder);
+    writer.println(builder);
   }
 
   /**
@@ -386,41 +386,41 @@ public final class Formatter {
    * @return the option usage statement
    */
   private String renderOptionUsage(Option.Template template) {
-    StringBuilder optionBuilder = new StringBuilder();
+    var optionUsage = new StringBuilder();
 
     // Print the option.
-    Optional<String> shortName = template.getShortName();
-    Optional<String> longName = template.getLongName();
+    var shortOptionName = template.getShortName();
+    var longOptionName = template.getLongName();
 
-    if (shortName.isPresent()) {
-      optionBuilder
+    if (shortOptionName.isPresent()) {
+      optionUsage
         .append(shortOptionPrefix)
-        .append(shortName.get());
+        .append(shortOptionName.get());
     }
-    else if (longName.isPresent()){
-      optionBuilder
+    else if (longOptionName.isPresent()) {
+      optionUsage
         .append(longOptionPrefix)
-        .append(longName.get());
+        .append(longOptionName.get());
     }
 
     // Print the values.
     if (template.canHaveValues()) {
-      String name = template.getValueName().orElse(optionValueName);
+      var optionValue = template.getValueName().orElse(optionValueName);
 
-      if (!name.isEmpty()) {
-        optionBuilder
+      if (!optionValue.isEmpty()) {
+        optionUsage
           .append(optionValueSeparator)
-          .append(name);
+          .append(optionValue);
       }
     }
 
     // Surround with brackets if not required.
     if (!template.isRequired()) {
-      optionBuilder.insert(0, '[');
-      optionBuilder.append(']');
+      optionUsage.insert(0, '[');
+      optionUsage.append(']');
     }
 
-    return optionBuilder.toString();
+    return optionUsage.toString();
   }
 
   /**
@@ -431,19 +431,19 @@ public final class Formatter {
    */
   private void renderOptions(StringBuilder sb, Set<Option.Template> options) {
     // Sort options with comparator.
-    List<Option.Template> sortedOptions = new ArrayList<>(options);
+    var sortedOptions = new ArrayList<>(options);
     sortedOptions.sort(optionComparator);
 
     // FIRST PASS: Determine the maximum length of options.
-    int maxShortOptSize = 0;
-    int maxLongOptSize = 0;
+    var maxShortOptSize = 0;
+    var maxLongOptSize = 0;
 
-    for (Option.Template template: sortedOptions) {
-      int shortOptSize = 0;
-      int longOptSize = 0;
+    for (var template: sortedOptions) {
+      var shortOptSize = 0;
+      var longOptSize = 0;
 
-      Optional<String> shortName = template.getShortName();
-      Optional<String> longName = template.getLongName();
+      var shortName = template.getShortName();
+      var longName = template.getLongName();
 
       // Take short name into account.
       if (shortName.isPresent()) {
@@ -464,10 +464,10 @@ public final class Formatter {
 
       // Take values into account.
       if (template.canHaveValues()) {
-        String name = template.getValueName().orElse(optionValueName);
+        var optionValue = template.getValueName().orElse(optionValueName);
 
-        if (!name.isEmpty()) {
-          int valueSize = name.length() + optionValueSeparator.length();
+        if (!optionValue.isEmpty()) {
+          var valueSize = optionValue.length() + optionValueSeparator.length();
           shortOptSize += shortName.isPresent() ? valueSize : 0;
           longOptSize += longName.isPresent() ? valueSize : 0;
         }
@@ -479,8 +479,8 @@ public final class Formatter {
     }
 
     // SECOND PASS: Render the options.
-    int longOptIndex = optionPadding + maxShortOptSize;
-    if (maxShortOptSize != 0 && maxLongOptSize != 0) {longOptIndex++;}
+    var longOptIndex = optionPadding + maxShortOptSize;
+    if (maxShortOptSize != 0 && maxLongOptSize != 0) longOptIndex++;
     int descIndex = longOptIndex + maxLongOptSize + descriptionPadding;
     renderOptions(sb, sortedOptions, optionPadding, longOptIndex, descIndex);
   }
@@ -497,54 +497,54 @@ public final class Formatter {
   private void renderOptions(StringBuilder sb, List<Option.Template> options,
   int shortOptIndex, int longOptIndex, int descIndex) {
 
-    for (int i = 0; i < options.size(); i++) {
-      Option.Template option = options.get(i);
-      StringBuilder optionBuilder = new StringBuilder();
-      StringBuilder optionValueBuilder = new StringBuilder();
+    for (var i = 0; i < options.size(); i++) {
+      var option = options.get(i);
+      var optionBuilder = new StringBuilder();
+      var optionValueBuilder = new StringBuilder();
 
       // Print option value.
       if (option.canHaveValues()) {
-        String name = option.getValueName().orElse(optionValueName);
+        var optionValue = option.getValueName().orElse(optionValueName);
 
-        if (!name.isEmpty()) {
+        if (!optionValue.isEmpty()) {
           optionValueBuilder
             .append(optionValueSeparator)
-            .append(name);
+            .append(optionValue);
         }
       }
 
       // Print option name.
-      Optional<String> shortName = option.getShortName();
-      Optional<String> longName = option.getLongName();
+      var shortOptionName = option.getShortName();
+      var longOptionName = option.getLongName();
 
-      if (shortName.isPresent()) {
+      if (shortOptionName.isPresent()) {
         optionBuilder
           // Align short options.
           .append(" ".repeat(shortOptIndex))
           .append(shortOptionPrefix)
-          .append(shortName.get())
+          .append(shortOptionName.get())
           .append(optionValueBuilder);
 
-        if (longName.isPresent()) {
+        if (longOptionName.isPresent()) {
           optionBuilder.append(',');
         }
       }
 
       // Print long option name.
-      if (longName.isPresent()) {
+      if (longOptionName.isPresent()) {
         optionBuilder
           // Align long options.
           .append(" ".repeat(longOptIndex - optionBuilder.length()))
           .append(longOptionPrefix)
-          .append(longName.get())
+          .append(longOptionName.get())
           .append(optionValueBuilder);
       }
 
       // Print description.
-      Optional<String> description = option.getDescription();
+      var description = option.getDescription();
 
       if (description.isPresent()) {
-        int padSize = descIndex - optionBuilder.length();
+        var padSize = descIndex - optionBuilder.length();
         optionBuilder.append(" ".repeat( padSize));
         optionBuilder.append(description.get());
       }
@@ -564,8 +564,7 @@ public final class Formatter {
    * @return the default print writer
    */
   private PrintWriter createDefaultPrintWriter() {
-    //noinspection UseOfSystemOutOrSystemErr acceptable default
-    Writer out = new OutputStreamWriter(System.out, characterSet);
+    var out = new OutputStreamWriter(System.out, characterSet);
     return new PrintWriter(out, true);
   }
 
@@ -577,5 +576,4 @@ public final class Formatter {
   static Comparator<Option.Template> defaultComparator() {
     return Option.Template::byName;
   }
-
 }

@@ -354,8 +354,8 @@ class GenericParserTest {
 
     List<String> optionsAndArgs = optionFormat.optionsAndArgsFor(
       new String[]{"a", "b"},     // short options
-      null,                      // long options
-      new String[]{"foo", "bar"} // arguments
+      new String[]{},             // long options
+      new String[]{"foo", "bar"}  // arguments
     );
 
     for (String tokens : optionsAndArgs) {

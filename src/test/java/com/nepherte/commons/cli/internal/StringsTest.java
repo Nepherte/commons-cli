@@ -73,15 +73,15 @@ final class StringsTest {
 
   @Test
   void containsWhitespace() {
-    assertThat(Strings.containsWhitespace("  "), is(true));
-    assertThat(Strings.containsWhitespace("\t"), is(true));
-    assertThat(Strings.containsWhitespace("a\ta"), is(true));
-    assertThat(Strings.containsWhitespace("aa"), is(false));
+    assertThat(Strings.hasSpace("  "), is(true));
+    assertThat(Strings.hasSpace("\t"), is(true));
+    assertThat(Strings.hasSpace("a\ta"), is(true));
+    assertThat(Strings.hasSpace("aa"), is(false));
   }
 
   @Test
   void containsWhitespaceNull() {
     assertThrows(NullPointerException.class,
-      () -> Strings.containsWhitespace(null));
+      () -> Strings.hasSpace(null));
   }
 }

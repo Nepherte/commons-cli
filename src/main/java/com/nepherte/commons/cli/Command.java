@@ -15,21 +15,18 @@
  */
 package com.nepherte.commons.cli;
 
-import com.nepherte.commons.cli.internal.Strings;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 
 import static com.nepherte.commons.cli.internal.Preconditions.*;
 import static com.nepherte.commons.cli.internal.Predicates.*;
+import static com.nepherte.commons.cli.internal.Strings.*;
 
-import static java.lang.String.format;
+import static java.lang.String.*;
 import static java.util.Arrays.*;
 import static java.util.stream.Collectors.*;
 
@@ -85,8 +82,8 @@ public final class Command {
    */
   Command(Builder builder) {
     name = builder.name;
-    options = new ArrayList<>(builder.options);
-    arguments = new ArrayList<>(builder.arguments);
+    options = List.copyOf(builder.options);
+    arguments = List.copyOf(builder.arguments);
   }
 
   /**
@@ -142,8 +139,8 @@ public final class Command {
    * @throws IllegalArgumentException no option with such name
    */
   public String getOptionValue(String name) {
-    List<String> values = getOptionValues(name);
-    return values.isEmpty() ? null : values.get(0);
+    var values = getOptionValues(name);
+    return values.isEmpty() ? null : values.getFirst();
   }
 
   /**
@@ -154,7 +151,7 @@ public final class Command {
    * @throws IllegalArgumentException no option with such name
    */
   public List<String> getOptionValues(String name) {
-    Option option = resolveOption(name, options);
+    var option = resolveOption(name, options);
 
     // One should really check for the presence of the option first.
     requireArg(option, notNull(), "Command has no option with name [%s]");
@@ -169,7 +166,7 @@ public final class Command {
    * @return all option names
    */
   public List<String> getAllOptionNames() {
-    return options.stream().map(Option::getName).collect(toList());
+    return options.stream().map(Option::getName).toList();
   }
 
   /**
@@ -195,18 +192,18 @@ public final class Command {
    */
   private static Option resolveOption(String name, Iterable<Option> options) {
     // Bounce back null and blank names.
-    if (Strings.isNullOrBlank(name)) {
+    if (isNullOrBlank(name)) {
       return null;
     }
 
     // Support querying an option name with leading hyphens.
-    Matcher matcher = Option.NAME_PREFIX_PATTERN.matcher(name);
-    String stripped = matcher.replaceFirst("");
+    var matcher = Option.NAME_PREFIX_PATTERN.matcher(name);
+    var stripped = matcher.replaceFirst("");
 
     // The last provided option prevails.
-    for (Option option: options) {
-      String shortName = option.getShortName().orElse(null);
-      String longName = option.getLongName().orElse(null);
+    for (var option: options) {
+      var shortName = option.getShortName().orElse(null);
+      var longName = option.getLongName().orElse(null);
 
       // Check the short name of the option first, then the long name.
       if (stripped.equals(shortName) || stripped.equals(longName)) {
@@ -305,8 +302,8 @@ public final class Command {
     public Builder option(Option option) {
       requireArg(option, notNull(), "The option is [%s]");
 
-      String optionName = option.getName();
-      Option resolved = resolveOption(optionName, options);
+      var optionName = option.getName();
+      var resolved = resolveOption(optionName, options);
 
       if (resolved != null) {
         options.remove(resolved);
@@ -387,18 +384,18 @@ public final class Command {
      */
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
-      builder.append(name != null ? name : "<undefined>");
+      var result = new StringBuilder();
+      result.append(name != null ? name : "<undefined>");
 
-      for (Option option: options) {
-        builder.append(' ').append(option);
+      for (var option: options) {
+        result.append(' ').append(option);
       }
 
-      for (String argument: arguments) {
-        builder.append(' ').append(argument);
+      for (var argument: arguments) {
+        result.append(' ').append(argument);
       }
 
-      return builder.toString();
+      return result.toString();
     }
 
     /**
@@ -448,8 +445,8 @@ public final class Command {
       name = builder.name;
       minArgs = builder.minArgs;
       maxArgs = builder.maxArgs;
-      groups = new HashSet<>(builder.groups);
-      templates = new HashSet<>(builder.templates);
+      groups = Set.copyOf(builder.groups);
+      templates = Set.copyOf(builder.templates);
     }
 
     /**
@@ -467,7 +464,7 @@ public final class Command {
      * @return the templates of this descriptor as an immutable set
      */
     public Set<Option.Template> getTemplates() {
-      return Collections.unmodifiableSet(templates);
+      return templates;
     }
 
     /**
@@ -476,9 +473,9 @@ public final class Command {
      * @return the required templates of this descriptor as an immutable set
      */
     public Set<Option.Template> getRequiredTemplates() {
-      return templates
-        .stream().filter(Option.Template::isRequired)
-        .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
+      return templates.stream()
+        .filter(Option.Template::isRequired)
+        .collect(toUnmodifiableSet());
     }
 
     /**
@@ -488,8 +485,7 @@ public final class Command {
      * @return the template matching the given short name
      */
     public Optional<Option.Template> getShortTemplate(String name) {
-      Predicate<Option.Template> predicate = new HasShortName(name);
-      return templates.stream().filter(predicate).findFirst();
+      return templates.stream().filter(hasShortName(name)).findFirst();
     }
 
     /**
@@ -499,8 +495,7 @@ public final class Command {
      * @return the template matching the given long name
      */
     public Optional<Option.Template> getLongTemplate(String name) {
-      Predicate<Option.Template> predicate = new HasLongName(name);
-      return templates.stream().filter(predicate).findFirst();
+      return templates.stream().filter(hasLongName(name)).findFirst();
     }
 
     /**
@@ -509,7 +504,7 @@ public final class Command {
      * @return the groups of this descriptor as an immutable set
      */
     public Set<Option.Group> getGroups() {
-      return Collections.unmodifiableSet(groups);
+      return groups;
     }
 
     /**
@@ -518,9 +513,9 @@ public final class Command {
      * @return the required groups of this descriptor as an immutable set
      */
     public Set<Option.Group> getRequiredGroups() {
-      return groups
-        .stream().filter(Option.Group::isRequired)
-        .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
+      return groups.stream()
+        .filter(Option.Group::isRequired)
+        .collect(toUnmodifiableSet());
     }
 
     /**
@@ -530,8 +525,7 @@ public final class Command {
      * @return the group the template belongs to
      */
     public Optional<Option.Group> getGroup(Option.Template template) {
-      Predicate<Option.Group> predicate = new HasTemplate(template);
-      return groups.stream().filter(predicate).findFirst();
+      return groups.stream().filter(hasTemplate(template)).findFirst();
     }
 
     /**
@@ -770,32 +764,32 @@ public final class Command {
       @Override
       public String toString() {
         // Include the name.
-        StringBuilder builder = new StringBuilder();
-        builder.append(name != null ? name : "<undefined>");
+        var result = new StringBuilder();
+        result.append(name != null ? name : "<undefined>");
 
         // Include the options.
           templates.stream()
             .sorted(Option.Template::byName)
-            .forEach(t -> builder.append(" ").append(t));
+            .forEach(t -> result.append(" ").append(t));
 
         // Include arguments if applicable.
         if (maxArgs != 0) {
-          builder.append(" ");
+          result.append(" ");
 
           // Surround optional arguments with [].
           if (minArgs == 0) {
-            builder.append("[");
+            result.append("[");
           }
 
-          builder.append("<args>");
+          result.append("<args>");
 
           // Surround optional arguments with [].
           if (minArgs == 0) {
-            builder.append("]");
+            result.append("]");
           }
         }
 
-        return builder.toString();
+        return result.toString();
       }
     }
   }
@@ -803,65 +797,21 @@ public final class Command {
   /**
    * Predicate that asserts a template has a given short name.
    */
-  private static final class HasShortName implements Predicate<Option.Template>{
-    private final String name;
-
-    /**
-     * Creates a new {@code HasShortName}.
-     *
-     * @param name the name to assert
-     */
-    HasShortName(String name) {
-      this.name = name;
-    }
-
-    @Override
-    public boolean test(Option.Template template) {
-      Optional<String> shortName = template.getShortName();
-      return shortName.filter(name::equals).isPresent();
-    }
+  private static Predicate<Option.Template> hasShortName(String name) {
+    return template -> template.getShortName().filter(name::equals).isPresent();
   }
 
   /**
    * Predicate that asserts a template has a given long name.
    */
-  private static final class HasLongName implements Predicate<Option.Template> {
-    private final String name;
-
-    /**
-     * Creates a new {@code HasLongName}.
-     *
-     * @param name the name to assert
-     */
-    HasLongName(String name) {
-      this.name = name;
-    }
-
-    @Override
-    public boolean test(Option.Template option) {
-      Optional<String> longName = option.getLongName();
-      return longName.filter(name::equals).isPresent();
-    }
+  private static Predicate<Option.Template> hasLongName(String name) {
+    return template -> template.getLongName().filter(name::equals).isPresent();
   }
 
   /**
    * Predicate that asserts a group has a given template.
    */
-  private static final class HasTemplate implements Predicate<Option.Group> {
-    private final Option.Template template;
-
-    /**
-     * Creates a new {@code HasTemplate}.
-     *
-     * @param template the template to assert
-     */
-    HasTemplate(Option.Template template) {
-      this.template = template;
-    }
-
-    @Override
-    public boolean test(Option.Group group) {
-      return group.getTemplates().contains(template);
-    }
+  private static Predicate<Option.Group> hasTemplate(Option.Template template) {
+    return group -> group.getTemplates().contains(template);
   }
 }

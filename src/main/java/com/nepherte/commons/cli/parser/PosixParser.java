@@ -19,12 +19,12 @@ import com.nepherte.commons.cli.Command;
 import com.nepherte.commons.cli.Option;
 import com.nepherte.commons.cli.Option.Template;
 import com.nepherte.commons.cli.Parser;
-import com.nepherte.commons.cli.exception.ParseException;
+import com.nepherte.commons.cli.exception.*;
 
 import java.util.*;
 
-import static com.nepherte.commons.cli.internal.Preconditions.requireArg;
-import static com.nepherte.commons.cli.internal.Predicates.notNull;
+import static com.nepherte.commons.cli.internal.Preconditions.*;
+import static com.nepherte.commons.cli.internal.Predicates.*;
 
 /**
  * <p>Parser that supports the {@code Posix}-style option format:
@@ -50,13 +50,13 @@ public class PosixParser implements Parser {
    */
   public PosixParser(Command.Descriptor descriptor) {
     requireArg(descriptor, notNull(), "Descriptor is [%s]" );
-    Command.Descriptor sanitized = sanitize(descriptor);
-    delegateParser = new GnuParser(sanitized);
+    var sanitizedDescriptor = sanitize(descriptor);
+    delegateParser = new GnuParser(sanitizedDescriptor);
   }
 
   @Override
   public Command parse(String[] tokens) throws ParseException {
-    String[] convertedTokens = convertTokens(tokens);
+    var convertedTokens = convertTokens(tokens);
     return delegateParser.parse(convertedTokens);
   }
 
@@ -78,12 +78,12 @@ public class PosixParser implements Parser {
    */
   private String[] convertTokens(String[] tokens)  {
     // Convert tokens to more convenient iterator.
-    List<String> tokenList = new ArrayList<>(List.of(tokens));
-    ListIterator<String> tokenIt = tokenList.listIterator();
+    var tokenList = new ArrayList<>(List.of(tokens));
+    var tokenIterator = tokenList.listIterator();
 
     // Do the actual conversions.
-    convertOptions(tokenIt);
-    convertArguments(tokenIt);
+    convertOptions(tokenIterator);
+    convertArguments(tokenIterator);
 
     // Return the converted tokens.
     return tokenList.toArray(String[]::new);
@@ -101,7 +101,7 @@ public class PosixParser implements Parser {
    * @param tokens the command line token cursor
    */
   private void convertOptions(ListIterator<String> tokens) {
-    Command.Descriptor descriptor = delegateParser.getDescriptor();
+    var descriptor = delegateParser.getDescriptor();
 
     // Don't convert options if there aren't any.
     if (descriptor.getTemplates().isEmpty()) {
@@ -110,7 +110,7 @@ public class PosixParser implements Parser {
 
     // Iterate until no more options.
     while (tokens.hasNext()) {
-      String token = tokens.next();
+      var token = tokens.next();
 
       // A single dash is an argument.
       if (token.equals("-")) {
@@ -147,24 +147,25 @@ public class PosixParser implements Parser {
    */
   private void convertOption(ListIterator<String> tokens) {
     // Take and remove the token.
-    String token = tokens.next();
+    var token = tokens.next();
     tokens.remove();
 
     // Replace each char with a Gnu-style option.
-    StringBuilder remaining = new StringBuilder();
-    remaining.append(token).deleteCharAt(0);
+    var remainingChars = new StringBuilder(token);
+    remainingChars.deleteCharAt(0);
 
-    while (remaining.length() != 0) {
-      char option = remaining.charAt(0);
-      remaining.deleteCharAt(0);
+    while (!remainingChars.isEmpty()) {
+      var option = remainingChars.charAt(0);
+      remainingChars.deleteCharAt(0);
 
-      Template template = searchTemplate(option);
-      StringBuilder tokenBuilder = new StringBuilder();
+      var tokenBuilder = new StringBuilder();
       tokenBuilder.append('-').append(option);
 
       // Look for a value (if the option can have one).
+      var template = searchTemplate(option);
+
       if (template != null && template.canHaveValues()) {
-        Optional<String> valueOpt = extractValue(remaining, tokens);
+        var valueOpt = extractValue(remainingChars, tokens);
         valueOpt.ifPresent(value -> tokenBuilder.append('=').append(value));
       }
 
@@ -172,13 +173,13 @@ public class PosixParser implements Parser {
     }
   }
 
-  private Optional<String> extractValue(StringBuilder remaining,
+  private Optional<String> extractValue(StringBuilder remainingChars,
   ListIterator<String> tokens) {
 
     // Look for a value glued to the option.
-    if (remaining.length() != 0) {
-      char token = remaining.charAt(0);
-      Template template = searchTemplate(token);
+    if (!remainingChars.isEmpty()) {
+      var token = remainingChars.charAt(0);
+      var template = searchTemplate(token);
 
       // Next char is an option, so not a value.
       if (template != null) {
@@ -186,8 +187,8 @@ public class PosixParser implements Parser {
       }
 
       // Next char is not an option. Assume it's a value.
-      String value = remaining.toString();
-      remaining.delete(0, remaining.length());
+      var value = remainingChars.toString();
+      remainingChars.delete(0, remainingChars.length());
       return Optional.of(value);
     }
 
@@ -197,7 +198,7 @@ public class PosixParser implements Parser {
     }
 
     // Look for a value as a separate token.
-    String token = tokens.next();
+    var token = tokens.next();
 
     if (token.startsWith("-")) {
       return Optional.empty();
@@ -208,9 +209,7 @@ public class PosixParser implements Parser {
   }
 
   private void convertArguments(ListIterator<String> tokens) {
-    while (tokens.hasNext()) {
-      tokens.next();
-    }
+    tokens.forEachRemaining(token -> {});
   }
 
   /**
@@ -221,37 +220,37 @@ public class PosixParser implements Parser {
    * @return the template that matches the given token or {@code null}
    */
   private Option.Template searchTemplate(char token) {
-    String shortName = Character.toString(token);
-    Command.Descriptor descriptor = delegateParser.getDescriptor();
+    var shortName = Character.toString(token);
+    var descriptor = delegateParser.getDescriptor();
     return descriptor.getShortTemplate(shortName).orElse(null);
   }
 
   private static Command.Descriptor sanitize(Command.Descriptor descriptor) {
-    Command.Descriptor.Builder result = Command.newDescriptor();
+    var result = Command.newDescriptor();
     descriptor.getName().ifPresent(result::name);
 
     result.minArgs(descriptor.getMinArgs());
     result.maxArgs(descriptor.getMaxArgs());
 
-    Map<String, Template> newTemplates = new HashMap<>();
+    var newTemplates = new HashMap<String, Template>();
 
     for (Template template : descriptor.getTemplates()) {
-      Template newTemplate = template.asBuilder().longName(null).build();
+      var newTemplate = template.asBuilder().longName(null).build();
       result.template(newTemplate);
 
-      String shortName = newTemplate.getName();
+      var shortName = newTemplate.getName();
       newTemplates.put(shortName, newTemplate);
     }
 
     for (Option.Group group : descriptor.getGroups()) {
-      Option.Group.Builder newGroupBuilder = Option.newGroup();
+      var newGroupBuilder = Option.newGroup();
 
       if (group.isRequired()) {
         newGroupBuilder.required();
       }
 
       for (Template template : group.getTemplates()) {
-        String name = template.getName();
+        var name = template.getName();
         newGroupBuilder.template(newTemplates.get(name));
       }
 

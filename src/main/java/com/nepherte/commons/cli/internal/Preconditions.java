@@ -77,7 +77,7 @@ public final class Preconditions {
   String error, Function<String, RuntimeException> exception) {
 
     if (!predicate.test(input)) {
-      String errorMessage = String.format(error, input);
+      var errorMessage = String.format(error, input);
       throw exception.apply(errorMessage);
     }
 

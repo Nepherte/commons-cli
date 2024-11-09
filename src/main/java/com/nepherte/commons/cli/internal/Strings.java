@@ -88,7 +88,7 @@ public final class Strings {
    * @param string the string to test
    * @return true if contains whitespace
    */
-  public static boolean containsWhitespace(String string) {
+  public static boolean hasSpace(String string) {
     return WHITESPACE_PATTERN.matcher(string).find();
   }
 }
