@@ -348,13 +348,13 @@ public final class GnuParser implements Parser {
    */
   private Option.Template searchTemplate(String token) {
     // Check for the long name.
-    if (token.startsWith("--")) {
+    if (token.startsWith("--") && !token.startsWith("---")) {
       var optionName = token.substring(2);
       return descriptor.getLongTemplate(optionName).orElse(null);
     }
 
     // Check for the short name.
-    if (token.startsWith("-")) {
+    if (token.startsWith("-") && !token.startsWith("--")) {
       var optionName = token.substring(1);
       return descriptor.getShortTemplate(optionName).orElse(null);
     }
